@@ -8,6 +8,9 @@ import requests
 import sys
 
 class MainWindow(QMainWindow):
+
+    secondWindowIsOpen = False
+
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
 
@@ -17,6 +20,9 @@ class MainWindow(QMainWindow):
         text.setWordWrap(True)
 
         videoWidget = QVideoWidget()
+        videoWidget.mouseReleaseEvent = self.openDialog
+
+        self.widget = QWidget()
         
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -35,13 +41,8 @@ class MainWindow(QMainWindow):
         wid = QWidget(self)
         self.setCentralWidget(wid)
 
-        # controlLayout = QHBoxLayout()
-        # controlLayout.setContentsMargins(0, 0, 0, 0)
-        # controlLayout.addWidget(self.playButton)
-
         layout = QVBoxLayout()
         layout.addWidget(videoWidget)
-        # layout.addLayout(controlLayout)
 
         wid.setLayout(layout)
 
@@ -53,6 +54,15 @@ class MainWindow(QMainWindow):
         else:
             self.mediaPlayer.play()
         
+    def openDialog(self, event):
+        if self.secondWindowIsOpen:
+            self.widget.hide()
+        else:
+            self.widget.resize(250, 150)
+            self.widget.show()
+        self.secondWindowIsOpen = not self.secondWindowIsOpen
+
+
     def openFile(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Open Video", QDir.homePath())
 
@@ -62,14 +72,11 @@ class MainWindow(QMainWindow):
             self.playButton.setEnabled(True)
             self.play()
 
-def _get_quote():
-    return requests.get('https://build-system.fman.io/quote').text
-
 if __name__ == '__main__':
     appctxt = ApplicationContext()
     stylesheet = appctxt.get_resource('styles.qss')
     appctxt.app.setStyleSheet(open(stylesheet).read())
     window = MainWindow()
-    window.showFullScreen()
+    window.show()
     exit_code = appctxt.app.exec_()
     sys.exit(exit_code)
