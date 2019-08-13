@@ -1,0 +1,11 @@
+QLabel {
+    min-width: 20em;
+    max-width: 30em;
+    min-height: 7em;
+    font-style: italic;
+    color: white;
+}
+
+QPushButton {
+    max-width: 10em;
+}

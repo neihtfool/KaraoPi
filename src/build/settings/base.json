@@ -1,0 +1,6 @@
+{
+    "app_name": "KaraoPi",
+    "author": "Q. Thien Ng. (neihtfool2)",
+    "main_module": "src/main/python/main.py",
+    "version": "0.0.0"
+}
