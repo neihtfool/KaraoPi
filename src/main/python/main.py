@@ -1,3 +1,5 @@
+from browser_window import BrowserWindow
+
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import Qt, QDir, QUrl
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
@@ -6,6 +8,8 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QStyle, Q
 from PyQt5.QtGui import QIcon
 import requests
 import sys
+import requests
+
 
 class MainWindow(QMainWindow):
 
@@ -22,7 +26,7 @@ class MainWindow(QMainWindow):
         videoWidget = QVideoWidget()
         videoWidget.mouseReleaseEvent = self.openDialog
 
-        self.widget = QWidget()
+        self.widget = BrowserWindow()
         
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -62,7 +66,6 @@ class MainWindow(QMainWindow):
             self.widget.show()
         self.secondWindowIsOpen = not self.secondWindowIsOpen
 
-
     def openFile(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Open Video", QDir.homePath())
 
@@ -71,6 +74,7 @@ class MainWindow(QMainWindow):
                 QMediaContent(QUrl.fromLocalFile(fileName)))
             self.playButton.setEnabled(True)
             self.play()
+
 
 if __name__ == '__main__':
     appctxt = ApplicationContext()
