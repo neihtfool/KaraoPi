@@ -5,6 +5,9 @@ import sys
 import requests
 
 
+TOKEN = os.environ['YT_TOKEN']
+
+
 def search(query):
     youtube = build('youtube', 'v3', developerKey=TOKEN)
     req = youtube.search().list(q=query, part='snippet', type='video') # default maxResults=5
@@ -23,5 +26,3 @@ def get_id(item):
 
 def get_thumbnail_medium(item):
     url = item['snippet']['thumbnails']['url']
-
-

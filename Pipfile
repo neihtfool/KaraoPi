@@ -7,8 +7,13 @@ verify_ssl = true
 pylint = "*"
 
 [packages]
-beautifulsoup = "*"
 selenium = "*"
+fbs = "*"
+pyqt5 = "==5.9.2"
+google-api-python-client = "*"
+google-auth-oauthlib = "*"
+google-auth-httplib2 = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

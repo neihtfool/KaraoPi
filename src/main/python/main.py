@@ -45,10 +45,6 @@ class MainWindow(QMainWindow):
         openAction.setStatusTip('Open movie')
         openAction.triggered.connect(self.openFile)
 
-        menuBar = self.menuBar()
-        fileMenu = menuBar.addMenu('&File')
-        fileMenu.addAction(openAction)
-
         wid = QWidget(self)
         self.setCentralWidget(wid)
 
