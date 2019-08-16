@@ -39,7 +39,7 @@ class VideoWindow(QMainWindow):
         self.hbuttonbox.addWidget(self.playButton)
         self.playButton.clicked.connect(self.PlayPause)
 
-        self.stopbutton = QPushButton("Stop")
+        self.stopbutton = QPushButton()
         self.stopbutton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
         self.hbuttonbox.addWidget(self.stopbutton)
         self.stopbutton.clicked.connect(self.Stop)
