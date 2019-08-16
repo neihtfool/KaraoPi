@@ -2,11 +2,11 @@ from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxL
 from PyQt5.QtCore import Qt
 import youtube_api as youtube
 
-class BrowserWindow(QWidget):
+
+class SearchWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.active = False
-        self.queue = []
+    
         self.tmp = {}
 
         self.textbox = QLineEdit(self)
@@ -29,7 +29,6 @@ class BrowserWindow(QWidget):
 
         self.setLayout(self.vbox)
 
-
     def on_click(self):
         textboxValue = self.textbox.text()
         results = youtube.search(textboxValue)
@@ -40,13 +39,7 @@ class BrowserWindow(QWidget):
         for item in results:
             title = youtube.get_title(item)
             self.tmp[title] = youtube.get_id(item)
-            self.listWidget.addItem(youtube.get_title(item))
 
     def clicked_item(self, item):
         title = str(item.text())
         _id = self.tmp[title]
-        self.queue.append(_id)
-        self.active = True
-
-
-    
