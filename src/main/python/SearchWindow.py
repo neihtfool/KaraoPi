@@ -31,6 +31,7 @@ class SearchWindow(QWidget):
 
     def on_click(self):
         textboxValue = self.textbox.text()
+        print("ja")
         results = youtube.search(textboxValue)
         self.build_list(results)
 

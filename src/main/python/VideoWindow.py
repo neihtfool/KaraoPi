@@ -6,6 +6,9 @@ import sys
 import vlc
 import pafy
 
+URL = "https://www.youtube.com/watch?v="
+
+
 class VideoWindow(QMainWindow):
     secondWindowIsOpen = False
 
@@ -35,10 +38,6 @@ class VideoWindow(QMainWindow):
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         self.hbuttonbox.addWidget(self.playButton)
         self.playButton.clicked.connect(self.PlayPause)
-
-        self.openButton = QPushButton("Open")
-        self.hbuttonbox.addWidget(self.openButton)
-        self.openButton.clicked.connect(self.OpenFile)
 
         self.stopbutton = QPushButton("Stop")
         self.stopbutton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
@@ -82,9 +81,9 @@ class VideoWindow(QMainWindow):
         self.mediaPlayer.stop()
         self.playButton.setText("Play")
     
-    def OpenFile(self, filename=None):
-        testVideo = "https://www.youtube.com/watch?v=s9nxlfS-RCs"
-        video = pafy.new(testVideo)
+    def OpenFile(self, videoId):
+        yt_url = URL + videoId
+        video = pafy.new(yt_url)
         best = video.getbest()
         playurl = best.url
         self.media = self.instance.media_new(playurl)

@@ -1,3 +1,4 @@
+from SearchWindow import SearchWindow
 from VideoWindow import VideoWindow
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
@@ -6,8 +7,6 @@ from PyQt5 import QtWebEngineWidgets
 from io import BytesIO
 import sys
 
-
-URL = "https://www.youtube.com/embed/"
 
 class Server(QThread):
     def run(self):
@@ -33,11 +32,14 @@ class RequestHandler(BaseHTTPRequestHandler):
         body = self.rfile.read(content_length).decode("utf-8")
         self.send_response(200)
         self.end_headers()
+        Window.v_window.OpenFile(videoId=body)
 
 if __name__ == '__main__':
     httpd = Server()
     httpd.start()
     window = Window()
     window.v_window.show()
+    search_window = SearchWindow()
+    search_window.show()
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)
