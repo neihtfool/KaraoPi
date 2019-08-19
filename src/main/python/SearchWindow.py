@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
+from CustomListItem import CustomListItem
 import youtube_api as youtube
 import requests
 
@@ -11,36 +13,53 @@ class SearchWindow(QWidget):
         self.tmp = {}
 
         self.textbox = QLineEdit(self)
+        self.textbox.returnPressed.connect(self.search)
 
-        self.listWidget = QListWidget()
-        self.listWidget.itemClicked.connect(self.clicked_item)
+        self.listWidget = QListView()
+        self.model = QStandardItemModel(self.listWidget)
+        self.listWidget.clicked.connect(self.clicked_item)
 
         self.button = QPushButton('Search', self)
-        self.button.clicked.connect(self.on_click)
+        self.button.clicked.connect(self.search)
 
         self.hbox = QHBoxLayout()
         self.hbox.addWidget(self.textbox)
         self.hbox.addWidget(self.button)
+        self.hbox.setSpacing(0)
+        self.hbox.setContentsMargins(5, 5, 5, 5)
 
         self.vbox = QVBoxLayout()
         self.vbox.addLayout(self.hbox)
         self.vbox.addWidget(self.listWidget)
+        self.vbox.setSpacing(0)
+        self.vbox.setContentsMargins(5, 5, 5, 5)
 
         self.setLayout(self.vbox)
 
-    def on_click(self):
+    def search(self):
         textboxValue = self.textbox.text()
         results = youtube.search(textboxValue)
         self.build_list(results)
 
     def build_list(self, results):
-        self.listWidget.clear()
+        self.model.clear()
         for item in results:
             title = youtube.get_title(item)
-            self.listWidget.addItem(title)
+            thumbnail = youtube.get_thumbnail_medium(item)
+            pixmap = QPixmap()
+            pixmap.loadFromData(thumbnail)
+            image = QIcon(pixmap)
+
+            qItem = QStandardItem(self.listWidget)
+            qItem.setText(title)
+            qItem.setIcon(image)
+
+            self.model.appendRow(qItem)
             self.tmp[title] = youtube.get_id(item)
 
+        self.listWidget.setModel(self.model)
+
     def clicked_item(self, item):
-        title = str(item.text())
+        title =
         _id = self.tmp[title]
         r = requests.post('http://localhost:8000', data =_id)

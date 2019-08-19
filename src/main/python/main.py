@@ -31,14 +31,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         body = self.rfile.read(content_length).decode("utf-8")
         self.send_response(200)
         self.end_headers()
-        Window.v_window.OpenFile(videoId=body)
+        Window.v_window.PlayVideo(videoId=body)
+
 
 if __name__ == '__main__':
     httpd = Server()
     httpd.start()
     window = Window()
-    window.v_window.showMaximized()
-    search_window = SearchWindow()
-    search_window.show()
+    window.v_window.show()
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)

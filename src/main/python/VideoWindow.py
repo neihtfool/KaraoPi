@@ -1,6 +1,8 @@
-from PyQt5.QtCore import Qt, QTimer, QEventLoop
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle
+from SearchWindow import SearchWindow
+from PyQt5.QtCore import Qt, QTimer, QEventLoop 
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle, QMacCocoaViewContainer, QApplication
 from PyQt5.QtGui import QIcon, QColor, QPalette
+
 import _thread
 import time
 import sys
@@ -8,7 +10,6 @@ import vlc
 import pafy
 
 URL = "https://www.youtube.com/watch?v="
-
 
 class VideoWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -22,43 +23,49 @@ class VideoWindow(QMainWindow):
 
         self.setUpGUI()
         self.isPaused = False
+        self.search_window = SearchWindow()
     
     def setUpGUI(self):
+        self.resize(800, 480)
         self.widget = QWidget(self)
         self.setCentralWidget(self.widget)
 
         if sys.platform == "darwin":
-            from PyQt5.QtWidgets import QMacCocoaViewContainer	
             self.videoframe = QMacCocoaViewContainer(0)
         else:
             self.videoframe = QFrame()
 
+        self.videoframe.mouseDoubleClickEvent = self.openDialog
         self.palette = self.videoframe.palette()
         self.palette.setColor(QPalette.Window, QColor(0,0,0))
         self.videoframe.setPalette(self.palette)
         self.videoframe.setAutoFillBackground(True)
+        self.videoframe
 
-        self.hbuttonbox = QHBoxLayout()
         self.playButton = QPushButton()
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.hbuttonbox.addWidget(self.playButton)
         self.playButton.clicked.connect(self.PlayPause)
-
-        self.stopbutton = QPushButton()
-        self.stopbutton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
-        self.hbuttonbox.addWidget(self.stopbutton)
-        self.stopbutton.clicked.connect(self.Stop)
-
-        self.hbuttonbox.addStretch(1)
 
         self.positionSlider = QSlider(Qt.Horizontal, self)
         self.positionSlider.setMaximum(1000)
         self.positionSlider.sliderMoved.connect(self.setPosition)
 
+        self.stopbutton = QPushButton()
+        self.stopbutton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
+        self.stopbutton.clicked.connect(self.Stop)
+
+        self.hboxLayout = QHBoxLayout()
+        self.hboxLayout.addWidget(self.playButton)
+        self.hboxLayout.addWidget(self.stopbutton)
+        self.hboxLayout.addWidget(self.positionSlider)
+        self.hboxLayout.setSpacing(0)
+        self.hboxLayout.setContentsMargins(0, 0, 0, 0)
+
         self.vboxLayout = QVBoxLayout()
         self.vboxLayout.addWidget(self.videoframe)
-        self.vboxLayout.addWidget(self.positionSlider)
-        self.vboxLayout.addLayout(self.hbuttonbox)
+        self.vboxLayout.addLayout(self.hboxLayout)
+        self.vboxLayout.setSpacing(0)
+        self.vboxLayout.setContentsMargins(0, 0, 0, 0)
 
         self.widget.setLayout(self.vboxLayout)
 
@@ -69,6 +76,9 @@ class VideoWindow(QMainWindow):
             _thread.start_new_thread(self.updateUI, ())
         except:
             print("error with positionSliderThread")
+
+    def openDialog(self, event):
+        self.search_window.hide() if self.search_window.isVisible() else self.search_window.show()
 
     def updateUI(self):
         while True:
@@ -85,18 +95,17 @@ class VideoWindow(QMainWindow):
             self.isPaused = True
         else:
             if self.mediaPlayer.play() == -1:
-                self.OpenFile()
+                self.PlayVideo()
                 return
             self.mediaPlayer.play()
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
-            #self.timer.start()
             self.isPaused = False
 
     def Stop(self):
         self.mediaPlayer.stop()
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
     
-    def OpenFile(self, videoId):
+    def PlayVideo(self, videoId):
         yt_url = URL + videoId
         video = pafy.new(yt_url)
         best = video.getbest()
@@ -114,7 +123,6 @@ class VideoWindow(QMainWindow):
 
         self.mediaPlayer.play()
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
-        #self.timer.start()
         self.isPaused = False
 
     def setVolume(self, Volume):

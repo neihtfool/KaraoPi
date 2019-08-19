@@ -3,7 +3,8 @@ from googleapiclient.discovery import build
 import os
 import sys
 import requests
-
+import html
+import urllib
 
 TOKEN = os.environ['YT_TOKEN']
 
@@ -17,7 +18,7 @@ def search(query):
 
 
 def get_title(item):
-    return item['snippet']['title']
+    return html.unescape(item['snippet']['title'])
 
 
 def get_id(item):
@@ -25,4 +26,6 @@ def get_id(item):
 
 
 def get_thumbnail_medium(item):
-    url = item['snippet']['thumbnails']['url']
+    url = item['snippet']['thumbnails']['default']['url']
+    data = urllib.request.urlopen(url).read()
+    return data
