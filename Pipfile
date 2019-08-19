@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+rope = "*"
 
 [packages]
 selenium = "*"
@@ -17,6 +18,7 @@ requests = "*"
 python-vlc = "*"
 pafy = "*"
 youtube-dl = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.7"

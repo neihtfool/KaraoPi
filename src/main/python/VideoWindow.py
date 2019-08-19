@@ -1,6 +1,7 @@
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QEventLoop
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle
 from PyQt5.QtGui import QIcon, QColor, QPalette
+import _thread
 import time
 import sys
 import vlc
@@ -10,8 +11,6 @@ URL = "https://www.youtube.com/watch?v="
 
 
 class VideoWindow(QMainWindow):
-    secondWindowIsOpen = False
-
     def __init__(self, parent=None):
         super(VideoWindow, self).__init__(parent)
         
@@ -27,7 +26,13 @@ class VideoWindow(QMainWindow):
     def setUpGUI(self):
         self.widget = QWidget(self)
         self.setCentralWidget(self.widget)
-        self.videoframe = QFrame()
+
+        if sys.platform == "darwin":
+            from PyQt5.QtWidgets import QMacCocoaViewContainer	
+            self.videoframe = QMacCocoaViewContainer(0)
+        else:
+            self.videoframe = QFrame()
+
         self.palette = self.videoframe.palette()
         self.palette.setColor(QPalette.Window, QColor(0,0,0))
         self.videoframe.setPalette(self.palette)
@@ -45,14 +50,14 @@ class VideoWindow(QMainWindow):
         self.stopbutton.clicked.connect(self.Stop)
 
         self.hbuttonbox.addStretch(1)
-        self.volumeSlider = QSlider(Qt.Horizontal, self)
-        self.volumeSlider.setMaximum(100)
-        self.volumeSlider.setValue(self.mediaPlayer.audio_get_volume())
-        self.volumeSlider.setToolTip("Volume")
-        self.hbuttonbox.addWidget(self.volumeSlider)
+
+        self.positionSlider = QSlider(Qt.Horizontal, self)
+        self.positionSlider.setMaximum(1000)
+        self.positionSlider.sliderMoved.connect(self.setPosition)
 
         self.vboxLayout = QVBoxLayout()
         self.vboxLayout.addWidget(self.videoframe)
+        self.vboxLayout.addWidget(self.positionSlider)
         self.vboxLayout.addLayout(self.hbuttonbox)
 
         self.widget.setLayout(self.vboxLayout)
@@ -60,26 +65,36 @@ class VideoWindow(QMainWindow):
         _open = QAction("&Open", self)
         _open.triggered.connect(sys.exit)     
 
-        self.timer = QTimer(self)
-        self.timer.setInterval(200)
+        try:
+            _thread.start_new_thread(self.updateUI, ())
+        except:
+            print("error with positionSliderThread")
+
+    def updateUI(self):
+        while True:
+            if self.mediaPlayer.is_playing():
+                self.positionSlider.setValue(self.mediaPlayer.get_position() * 1000)
+
+    def setPosition(self, position):
+        self.mediaPlayer.set_position(position / 1000.0)
 
     def PlayPause(self):
         if self.mediaPlayer.is_playing():
             self.mediaPlayer.pause()
-            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
+            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
             self.isPaused = True
         else:
             if self.mediaPlayer.play() == -1:
                 self.OpenFile()
                 return
             self.mediaPlayer.play()
-            self.playButton.setText("Pause")
-            self.timer.start()
+            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
+            #self.timer.start()
             self.isPaused = False
 
     def Stop(self):
         self.mediaPlayer.stop()
-        self.playButton.setText("Play")
+        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
     
     def OpenFile(self, videoId):
         yt_url = URL + videoId
@@ -90,8 +105,17 @@ class VideoWindow(QMainWindow):
         self.media.get_mrl()
         self.mediaPlayer.set_media(self.media)
 
-        self.mediaPlayer.set_xwindow(self.videoframe.winId())
+        if sys.platform.startswith('linux'):
+            self.mediaPlayer.set_xwindow(self.videoframe.winId())
+        elif sys.platform == "win32":
+            self.mediaPlayer.set_hwnd(self.videoframe.winId())
+        elif sys.platform == "darwin":
+            self.mediaPlayer.set_nsobject(int(self.videoframe.winId()))
+
         self.mediaPlayer.play()
+        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
+        #self.timer.start()
+        self.isPaused = False
 
     def setVolume(self, Volume):
         self.mediaPlayer.audio_set_volume(Volume)

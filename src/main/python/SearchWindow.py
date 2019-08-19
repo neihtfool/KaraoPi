@@ -19,14 +19,12 @@ class SearchWindow(QWidget):
         self.button.clicked.connect(self.on_click)
 
         self.hbox = QHBoxLayout()
-        self.hbox.addStretch(1)
         self.hbox.addWidget(self.textbox)
         self.hbox.addWidget(self.button)
-        self.hbox.addWidget(self.listWidget)
 
         self.vbox = QVBoxLayout()
-        self.vbox.addStretch(1)
         self.vbox.addLayout(self.hbox)
+        self.vbox.addWidget(self.listWidget)
 
         self.setLayout(self.vbox)
 

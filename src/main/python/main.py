@@ -11,7 +11,6 @@ import sys
 class Server(QThread):
     def run(self):
         self._server = HTTPServer(('localhost', 8000), RequestHandler)
-        print("run server")
         self._server.serve_forever()
 
 
@@ -38,7 +37,7 @@ if __name__ == '__main__':
     httpd = Server()
     httpd.start()
     window = Window()
-    window.v_window.show()
+    window.v_window.showMaximized()
     search_window = SearchWindow()
     search_window.show()
     exit_code = window.appctxt.app.exec_()
