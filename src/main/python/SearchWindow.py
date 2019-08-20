@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
 import youtube_api as youtube
@@ -16,6 +16,7 @@ class SearchWindow(QWidget):
         self.textbox.returnPressed.connect(self.search)
 
         self.listWidget = QListView()
+        self.listWidget.setIconSize(QSize(90,90))
         self.model = QStandardItemModel(self.listWidget)
         self.listWidget.clicked.connect(self.clicked_item)
 
@@ -50,7 +51,7 @@ class SearchWindow(QWidget):
             pixmap.loadFromData(thumbnail)
             image = QIcon(pixmap)
 
-            qItem = QStandardItem(self.listWidget)
+            qItem = QStandardItem()
             qItem.setText(title)
             qItem.setIcon(image)
 
@@ -60,6 +61,5 @@ class SearchWindow(QWidget):
         self.listWidget.setModel(self.model)
 
     def clicked_item(self, item):
-        title =
-        _id = self.tmp[title]
-        r = requests.post('http://localhost:8000', data =_id)
+        title = self.model.itemFromIndex(item).text()
+        requests.post('http://localhost:8000', data=self.tmp[title])
