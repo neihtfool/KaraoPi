@@ -1,9 +1,10 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
 import youtube_api as youtube
 import requests
+import json
 
 
 class SearchWindow(QWidget):
@@ -15,10 +16,29 @@ class SearchWindow(QWidget):
         self.textbox = QLineEdit(self)
         self.textbox.returnPressed.connect(self.search)
 
-        self.listWidget = QListView()
-        self.listWidget.setIconSize(QSize(90,90))
-        self.model = QStandardItemModel(self.listWidget)
-        self.listWidget.clicked.connect(self.clicked_item)
+        self.searchResultLabel = QLabel()
+        self.searchResultLabel.setText("Search Results")
+        self.searchResultLabel.setStyleSheet('color: white')
+
+        self.currentVideoLabel = QLabel("Currently Playing:")
+        self.currentVideoLabel.setStyleSheet('color: white')
+        self.currentVideo = QLabel()
+        self.currentVideo.setStyleSheet('color: white')
+        self.currentVideoHBox = QHBoxLayout()
+        self.currentVideoHBox.addWidget(self.currentVideoLabel)
+        self.currentVideoHBox.addWidget(self.currentVideo)
+
+        self.queueLabel = QLabel("Coming up next:")
+        self.queueLabel.setStyleSheet('color: white')
+
+        self.searchResultsList = QListView()
+        self.searchResultsList.setIconSize(QSize(90,90))
+        self.model = QStandardItemModel(self.searchResultsList)
+        self.searchResultsList.clicked.connect(self.clicked_item)
+
+        self.queueList = QListView()
+        self.queueList.setIconSize(QSize(90,90))
+        self.queueModel = QStandardItemModel(self.queueList)
 
         self.button = QPushButton('Search', self)
         self.button.clicked.connect(self.search)
@@ -31,7 +51,11 @@ class SearchWindow(QWidget):
 
         self.vbox = QVBoxLayout()
         self.vbox.addLayout(self.hbox)
-        self.vbox.addWidget(self.listWidget)
+        self.vbox.addWidget(self.searchResultLabel)
+        self.vbox.addWidget(self.searchResultsList)
+        self.vbox.addLayout(self.currentVideoHBox)
+        self.vbox.addWidget(self.queueLabel)
+        self.vbox.addWidget(self.queueList)
         self.vbox.setSpacing(0)
         self.vbox.setContentsMargins(5, 5, 5, 5)
 
@@ -58,8 +82,23 @@ class SearchWindow(QWidget):
             self.model.appendRow(qItem)
             self.tmp[title] = youtube.get_id(item)
 
-        self.listWidget.setModel(self.model)
+        self.searchResultsList.setModel(self.model)
 
     def clicked_item(self, item):
         title = self.model.itemFromIndex(item).text()
-        requests.post('http://localhost:8000', data=self.tmp[title])
+        data = {'title': title, 'video_id': self.tmp[title]}
+        r = requests.post('http://localhost:8000', data=data)
+        content = json.loads(r.content.decode("utf-8"))
+        self.currentVideo.setText(content['currentVideo'])
+        self.setupQueue(content['queue'])
+
+    def setupQueue(self, queue):
+        self.queueModel.clear()
+        for q in queue:
+            qItem = QStandardItem(q)
+            self.queueModel.appendRow(qItem)
+        self.queueList.setModel(self.queueModel)
+
+
+
+

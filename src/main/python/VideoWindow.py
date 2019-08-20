@@ -2,7 +2,6 @@ from SearchWindow import SearchWindow
 from PyQt5.QtCore import Qt, QTimer, QEventLoop 
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle, QMacCocoaViewContainer, QApplication
 from PyQt5.QtGui import QIcon, QColor, QPalette
-
 import _thread
 import time
 import sys
@@ -22,8 +21,10 @@ class VideoWindow(QMainWindow):
         self.mediaPlayer = self.instance.media_player_new()
 
         self.setUpGUI()
-        self.isPaused = False
         self.search_window = SearchWindow()
+        p = self.search_window.palette()
+        p.setColor(self.search_window.backgroundRole(), Qt.black)
+        self.search_window.setPalette(p)
     
     def setUpGUI(self):
         self.resize(800, 480)
@@ -92,14 +93,9 @@ class VideoWindow(QMainWindow):
         if self.mediaPlayer.is_playing():
             self.mediaPlayer.pause()
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-            self.isPaused = True
         else:
-            if self.mediaPlayer.play() == -1:
-                self.PlayVideo()
-                return
             self.mediaPlayer.play()
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
-            self.isPaused = False
 
     def Stop(self):
         self.mediaPlayer.stop()
@@ -123,7 +119,7 @@ class VideoWindow(QMainWindow):
 
         self.mediaPlayer.play()
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
-        self.isPaused = False
+        return video.length
 
     def setVolume(self, Volume):
         self.mediaPlayer.audio_set_volume(Volume)
