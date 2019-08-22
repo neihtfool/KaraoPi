@@ -19,6 +19,8 @@ python-vlc = "*"
 pafy = "*"
 youtube-dl = "*"
 pylint = "*"
+websockets = "*"
+asyncio = "*"
 
 [requires]
 python_version = "3.7"
