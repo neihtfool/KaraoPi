@@ -20,7 +20,7 @@ class SearchWindow(QWidget):
         self.searchResultLabel.setText("Search Results")
         self.searchResultLabel.setStyleSheet('color: white')
 
-        self.currentVideoLabel = QLabel("Currently Playing:")
+        self.currentVideoLabel = QLabel("Currently Playing: ")
         self.currentVideoLabel.setStyleSheet('color: white')
         self.currentVideo = QLabel()
         self.currentVideo.setStyleSheet('color: white')
@@ -87,7 +87,7 @@ class SearchWindow(QWidget):
     def clicked_item(self, item):
         title = self.model.itemFromIndex(item).text()
         data = {'title': title, 'video_id': self.tmp[title]}
-        r = requests.post('http://localhost:8000', data=data)
+        r = requests.post('http://localhost:8000', data=json.dumps(data, ensure_ascii=True))
         content = json.loads(r.content.decode("utf-8"))
         self.currentVideo.setText(content['currentVideo'])
         self.setupQueue(content['queue'])

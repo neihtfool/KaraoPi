@@ -22,9 +22,9 @@ class VideoWindow(QMainWindow):
 
         self.setUpGUI()
         self.search_window = SearchWindow()
-        p = self.search_window.palette()
-        p.setColor(self.search_window.backgroundRole(), Qt.black)
-        self.search_window.setPalette(p)
+        # p = self.search_window.palette()
+        # p.setColor(self.search_window.backgroundRole(), Qt.black)
+        # self.search_window.setPalette(p)
     
     def setUpGUI(self):
         self.resize(800, 480)
