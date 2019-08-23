@@ -1,6 +1,6 @@
 from SearchWindow import SearchWindow
 from PyQt5.QtCore import Qt, QTimer, QEventLoop 
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle, QMacCocoaViewContainer, QApplication
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle, QApplication
 from PyQt5.QtGui import QIcon, QColor, QPalette
 import _thread
 import time
@@ -32,6 +32,7 @@ class VideoWindow(QMainWindow):
         self.setCentralWidget(self.widget)
 
         if sys.platform == "darwin":
+            from PyQt5.QtWidgets import QMacCocoaViewContainer
             self.videoframe = QMacCocoaViewContainer(0)
         else:
             self.videoframe = QFrame()

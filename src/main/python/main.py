@@ -11,7 +11,8 @@ import sys
 import _thread
 import time
 import json
-
+import asyncio
+import websockets
 
 queue = deque([])
 currentVideo = ""
@@ -62,11 +63,29 @@ def run():
             duration = Window.v_window.PlayVideo(videoId = temp_dict['video_id'])
             time.sleep(duration - 0.5) #minimize delay
 
+
+async def hello(websocket, path):
+    name = await websocket.recv()
+    print(f"< {name}")
+
+    greeting = f"Hello {name}!"
+
+    await websocket.send(greeting)
+    print(f"> {greeting}")
+    
+
 if __name__ == '__main__':
     httpd = Server()
     httpd.start()
     window = Window()
     window.v_window.show()
     _thread.start_new_thread(run, ())
+
+    start_server = websockets.serve(hello, "localhost", 8765)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    
+    _thread.start_new_thread(asyncio.get_event_loop().run_forever, ())
+
+
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)
