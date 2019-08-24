@@ -50,41 +50,54 @@ class RequestHandler(BaseHTTPRequestHandler):
         for elem in reversed(queue):
             response_queue.append(elem['title'])
 
-        self.wfile.write(json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8"))
+        message = json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")            
+        self.wfile.write(message)
 
         
-def run():
+async def createQueueJSON():
+    response_queue = []
+    for elem in reversed(queue):
+            response_queue.append(elem['title'])
+    return await json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")
+
+
+async def setPlayer():
+    while True:
+        if not window.v_window.mediaPlayer.is_playing():
+            if queue:
+                temp_dict = queue.pop()
+                currentVideo = temp_dict['title']
+                print("current", currentVideo)
+                duration = Window.v_window.PlayVideo(videoId = temp_dict['video_id'])
+                #time.sleep(duration - 0.5) #minimize delay
+        
+    
+async def sendQueue(websocket, path):
     global currentVideo
     global queue
+    tmp_q = queue.copy()
+    tmp_current = currentVideo
     while True:
-        if not window.v_window.mediaPlayer.is_playing() and queue:
-            temp_dict = queue.pop()
-            currentVideo = temp_dict['title']
-            duration = Window.v_window.PlayVideo(videoId = temp_dict['video_id'])
-            time.sleep(duration - 0.5) #minimize delay
-
-
-async def hello(websocket, path):
-    name = await websocket.recv()
-    print(f"< {name}")
-
-    greeting = f"Hello {name}!"
-
-    await websocket.send(greeting)
-    print(f"> {greeting}")
-    
+        print(currentVideo)
+        print(tmp_current)
+        if not (tmp_q == queue and tmp_current == currentVideo):
+            print("koko")
+            message = await createQueueJSON()
+            await websocket.send(message)
 
 if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
     httpd = Server()
     httpd.start()
+    print("http")
     window = Window()
     window.v_window.show()
-    _thread.start_new_thread(run, ())
-
-    start_server = websockets.serve(hello, "localhost", 8765)
-    asyncio.get_event_loop().run_until_complete(start_server)
-    
-    _thread.start_new_thread(asyncio.get_event_loop().run_forever, ())
+    print("Qt")
+    web_socket_server = websockets.serve(sendQueue, 'localhost', 8765)
+    asyncio.ensure_future(setPlayer())
+    asyncio.ensure_future(web_socket_server)
+    _thread.start_new_thread(loop.run_forever(), ())
+    #_thread.start_new_thread(asyncio.get_event_loop().run_forever, ())
 
 
     exit_code = window.appctxt.app.exec_()
