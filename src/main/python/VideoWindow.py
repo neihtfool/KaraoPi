@@ -120,7 +120,7 @@ class VideoWindow(QMainWindow):
 
         self.mediaPlayer.play()
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
-        return video.length
+        
 
     def setVolume(self, Volume):
         self.mediaPlayer.audio_set_volume(Volume)

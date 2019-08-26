@@ -13,10 +13,10 @@ import time
 import json
 import tornado.ioloop
 import tornado.web
+import tornado.websocket
 
 queue = deque([])
 currentVideo = ""
-connected = set()
 
 
 NODATA = "No data received!"
@@ -36,6 +36,17 @@ class Window():
     v_window = VideoWindow()
 
 
+class QueueWebSocketHandler(tornado.websocket.WebSocketHandler):
+    connections = set()
+
+    def open(self):
+        self.connections.add(self)
+        self.write_message(createQueueResponse())
+    
+    def on_close(self):
+        self.connections.remove(self)
+
+
 class AddVideoHandler(tornado.web.RequestHandler):    
     def post(self):
         global queue
@@ -43,19 +54,13 @@ class AddVideoHandler(tornado.web.RequestHandler):
         video_id = self.get_argument('video_id', NODATA)
         queue.appendleft({'title': title, 'video_id': video_id})
 
-        response_queue = []
-        for elem in reversed(queue):
-            response_queue.append(elem['title'])
         time.sleep(0.3)
-        message = json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")            
-        self.write({"currentVideo": currentVideo, "queue": response_queue})
+        self.write(createQueueResponse())
 
         
-def createQueueJSON():
-    response_queue = []
-    for elem in reversed(queue):
-            response_queue.append(elem['title'])
-    return json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")
+def createQueueResponse():
+    response_queue = [elem['title'] for elem in reversed(queue)]
+    return {"currentVideo": currentVideo, "queue": response_queue}
 
 
 def setPlayer():
@@ -66,12 +71,14 @@ def setPlayer():
             if queue:
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
-                duration = Window.v_window.PlayVideo(videoId = temp_dict['video_id'])
+                Window.v_window.PlayVideo(videoId = temp_dict['video_id'])
+                [client.send(createQueueResponse()) for client in QueueWebSocketHandler.connections]
     
 
 def make_app():
     return tornado.web.Application([
         (r"/add", AddVideoHandler),
+        (r"/queue",QueueWebSocketHandler)
     ])
 
 if __name__ == '__main__':
