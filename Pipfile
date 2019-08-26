@@ -21,6 +21,7 @@ youtube-dl = "*"
 pylint = "*"
 websockets = "*"
 asyncio = "*"
+tornado = "*"
 
 [requires]
 python_version = "3.7"

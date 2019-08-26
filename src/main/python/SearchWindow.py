@@ -2,9 +2,10 @@ from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxL
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
+from tornado.httpclient import HTTPClient, HTTPRequest
 import youtube_api as youtube
-import requests
 import json
+import urllib
 
 
 class SearchWindow(QWidget):
@@ -87,10 +88,18 @@ class SearchWindow(QWidget):
     def clicked_item(self, item):
         title = self.model.itemFromIndex(item).text()
         data = {'title': title, 'video_id': self.tmp[title]}
-        r = requests.post('http://localhost:8000', data=json.dumps(data, ensure_ascii=True))
-        content = json.loads(r.content.decode("utf-8"))
-        self.currentVideo.setText(content['currentVideo'])
-        self.setupQueue(content['queue'])
+        body = urllib.parse.urlencode(data)
+        http_client = HTTPClient()
+        try:
+            req = HTTPRequest('http://localhost:8000/add', method='POST', headers=None, body=body)
+            res = http_client.fetch('http://localhost:8000/add', method='POST', headers=None, body=body)
+            
+            content = json.loads(res.body.decode("utf-8"))
+            self.currentVideo.setText(content['currentVideo'])
+            self.setupQueue(content['queue'])
+        except Exception as e:
+            print(str(e))
+        
 
     def setupQueue(self, queue):
         self.queueModel.clear()

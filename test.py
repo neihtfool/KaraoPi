@@ -1,15 +1,15 @@
-import asyncio
 import websockets
+import asyncio
+import sys
 
-async def hello():
+async def t():
     uri = "ws://localhost:8765"
-    async with websockets.connect(uri) as websocket:
-        name = input("What's your name? ")
+    async with websockets.connect(uri) as ws:
+        await ws.send("test")
+        while True:
+            g = await ws.recv()
+            print(g)
 
-        await websocket.send(name)
-        print(f"> {name}")
 
-        greeting = await websocket.recv()
-        print(f"< {greeting}")
-
-asyncio.get_event_loop().run_until_complete(hello())
+asyncio.get_event_loop().run_until_complete(t())
+sys.exit(0)

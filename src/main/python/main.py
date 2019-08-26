@@ -11,95 +11,80 @@ import sys
 import _thread
 import time
 import json
-import asyncio
-import websockets
+import tornado.ioloop
+import tornado.web
 
 queue = deque([])
 currentVideo = ""
+connected = set()
 
 
-class Server(QThread):
-    def run(self):
-        self._server = HTTPServer(('localhost', 8000), RequestHandler)
-        self._server.serve_forever()
+NODATA = "No data received!"
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 class Window():
     appctxt = ApplicationContext()
     v_window = VideoWindow()
 
 
-class RequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-    
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
+class AddVideoHandler(tornado.web.RequestHandler):    
+    def post(self):
         global queue
+        title = self.get_argument("title", NODATA)
+        video_id = self.get_argument('video_id', NODATA)
+        queue.appendleft({'title': title, 'video_id': video_id})
 
-        req = self.rfile.read(content_length).decode("utf-8")
-        content = json.loads(req)
-
-        queue.appendleft({'title': content['title'], 'video_id': content['video_id']})
-    
-        self.send_response(200)
-        self.end_headers()
-        
         response_queue = []
         for elem in reversed(queue):
             response_queue.append(elem['title'])
-
+        time.sleep(0.3)
         message = json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")            
-        self.wfile.write(message)
+        self.write({"currentVideo": currentVideo, "queue": response_queue})
 
         
-async def createQueueJSON():
+def createQueueJSON():
     response_queue = []
     for elem in reversed(queue):
             response_queue.append(elem['title'])
-    return await json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")
+    return json.dumps({"currentVideo": currentVideo, "queue": response_queue}).encode("utf-8")
 
 
-async def setPlayer():
+def setPlayer():
+    global currentVideo
+    global queue
     while True:
         if not window.v_window.mediaPlayer.is_playing():
             if queue:
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
-                print("current", currentVideo)
                 duration = Window.v_window.PlayVideo(videoId = temp_dict['video_id'])
-                #time.sleep(duration - 0.5) #minimize delay
-        
     
-async def sendQueue(websocket, path):
-    global currentVideo
-    global queue
-    tmp_q = queue.copy()
-    tmp_current = currentVideo
-    while True:
-        print(currentVideo)
-        print(tmp_current)
-        if not (tmp_q == queue and tmp_current == currentVideo):
-            print("koko")
-            message = await createQueueJSON()
-            await websocket.send(message)
+
+def make_app():
+    return tornado.web.Application([
+        (r"/add", AddVideoHandler),
+    ])
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    httpd = Server()
-    httpd.start()
-    print("http")
-    window = Window()
-    _thread.start_new_thread(window.v_window.show, ())
+    print("server")
+    app = make_app()
+    app.listen(8000)
+    _thread.start_new_thread(tornado.ioloop.IOLoop.current().start, ())
+    
     print("Qt")
-    web_socket_server = websockets.serve(sendQueue, 'localhost', 8765)
-    asyncio.ensure_future(setPlayer())
-    asyncio.ensure_future(web_socket_server)
-    loop.run_forever()
-    #_thread.start_new_thread(loop.run_forever(), ())
-    #_thread.start_new_thread(asyncio.get_event_loop().run_forever, ())
-
+    window = Window()
+    window.v_window.show()
+    
+    _thread.start_new_thread(setPlayer, ())
 
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)
