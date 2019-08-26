@@ -91,12 +91,13 @@ if __name__ == '__main__':
     httpd.start()
     print("http")
     window = Window()
-    window.v_window.show()
+    _thread.start_new_thread(window.v_window.show, ())
     print("Qt")
     web_socket_server = websockets.serve(sendQueue, 'localhost', 8765)
     asyncio.ensure_future(setPlayer())
     asyncio.ensure_future(web_socket_server)
-    _thread.start_new_thread(loop.run_forever(), ())
+    loop.run_forever()
+    #_thread.start_new_thread(loop.run_forever(), ())
     #_thread.start_new_thread(asyncio.get_event_loop().run_forever, ())
 
 
