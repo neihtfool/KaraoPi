@@ -112,16 +112,14 @@ if __name__ == '__main__':
     app = make_app()
     app.listen(8000)
     main_loop = tornado.ioloop.IOLoop.current()
-    #sched = tornado.ioloop.PeriodicCallback(QueueWebSocketHandler.send_message, 3000, io_loop=main_loop)
     main_loop.add_timeout(datetime.timedelta(seconds=5), QueueWebSocketHandler.send_message)
     _thread.start_new_thread(main_loop.start, ())
-    # _thread.start_new_thread(tornado.ioloop.IOLoop.current().start, ())
     
     print("Qt")
     window = Window()
     window.v_window.show()
 
-    _thread.start_new_thread(setPlayer, ())
+    #_thread.start_new_thread(setPlayer, ())
 
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)
