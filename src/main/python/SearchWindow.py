@@ -91,9 +91,7 @@ class SearchWindow(QWidget):
         body = urllib.parse.urlencode(data)
         http_client = HTTPClient()
         try:
-            req = HTTPRequest('http://localhost:8000/add', method='POST', headers=None, body=body)
             res = http_client.fetch('http://localhost:8000/add', method='POST', headers=None, body=body)
-            
             content = json.loads(res.body.decode("utf-8"))
             self.currentVideo.setText(content['currentVideo'])
             self.setupQueue(content['queue'])
