@@ -93,8 +93,6 @@ class SearchWindow(QWidget):
         try:
             res = http_client.fetch('http://localhost:8000/add', method='POST', headers=None, body=body)
             content = json.loads(res.body.decode("utf-8"))
-            self.currentVideo.setText(content['currentVideo'])
-            self.setupQueue(content['queue'])
         except Exception as e:
             print(str(e))
         

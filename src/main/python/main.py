@@ -36,6 +36,8 @@ class bcolors:
 
 class Window():
     appctxt = ApplicationContext()
+    stylesheet = appctxt.get_resource('styles.qss')
+    appctxt.app.setStyleSheet(open(stylesheet).read())
     v_window = VideoWindow()
 
 
@@ -75,8 +77,10 @@ class AddVideoHandler(tornado.web.RequestHandler):
         video_id = self.get_argument('video_id', NODATA)
         queue.appendleft({'title': title, 'video_id': video_id})
 
-        time.sleep(0.3)
-        self.write(createQueueResponse())
+        Window.v_window.search_window.currentVideo.setText(currentVideo)
+        Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
+
+        self.write("Added " + title + " to queue!")
 
         
 def createQueueResponse():
@@ -85,7 +89,6 @@ def createQueueResponse():
 
 
 def setPlayer():
-    print("loop")
     global currentVideo
     global queue
     while True:
@@ -94,6 +97,8 @@ def setPlayer():
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
+                Window.v_window.search_window.currentVideo.setText(currentVideo)
+                Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
 
 
 def make_app():

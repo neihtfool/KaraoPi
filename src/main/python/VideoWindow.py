@@ -35,27 +35,18 @@ class VideoWindow(QMainWindow):
             self.videoframe = QFrame()
 
         self.videoframe.mouseDoubleClickEvent = self.openDialog
+        self.videoframe.mouseReleaseEvent = self.PlayPause
         self.palette = self.videoframe.palette()
         self.palette.setColor(QPalette.Window, QColor(0,0,0))
         self.videoframe.setPalette(self.palette)
         self.videoframe.setAutoFillBackground(True)
         self.videoframe
 
-        self.playButton = QPushButton()
-        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.playButton.clicked.connect(self.PlayPause)
-
         self.positionSlider = QSlider(Qt.Horizontal, self)
         self.positionSlider.setMaximum(1000)
         self.positionSlider.sliderMoved.connect(self.setPosition)
 
-        self.stopbutton = QPushButton()
-        self.stopbutton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
-        self.stopbutton.clicked.connect(self.Stop)
-
         self.hboxLayout = QHBoxLayout()
-        self.hboxLayout.addWidget(self.playButton)
-        self.hboxLayout.addWidget(self.stopbutton)
         self.hboxLayout.addWidget(self.positionSlider)
         self.hboxLayout.setSpacing(0)
         self.hboxLayout.setContentsMargins(0, 0, 0, 0)
@@ -87,17 +78,14 @@ class VideoWindow(QMainWindow):
     def setPosition(self, position):
         self.mediaPlayer.set_position(position / 1000.0)
 
-    def PlayPause(self):
+    def PlayPause(self, event):
         if self.mediaPlayer.is_playing():
             self.mediaPlayer.pause()
-            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         else:
             self.mediaPlayer.play()
-            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
 
     def Stop(self):
         self.mediaPlayer.stop()
-        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
     
     def PlayVideo(self, videoId):
         yt_url = URL + videoId
@@ -116,7 +104,6 @@ class VideoWindow(QMainWindow):
             self.mediaPlayer.set_nsobject(int(self.videoframe.winId()))
 
         self.mediaPlayer.play()
-        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
         
 
     def setVolume(self, Volume):
