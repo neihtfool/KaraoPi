@@ -97,6 +97,7 @@ def setPlayer():
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
+                time.sleep(0.3)
                 Window.v_window.search_window.currentVideo.setText(currentVideo)
                 Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
 

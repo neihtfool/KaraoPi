@@ -107,8 +107,9 @@ class VideoWindow(QMainWindow):
         elif sys.platform == "darwin":
             self.mediaPlayer.set_nsobject(int(self.videoframe.winId()))
 
-        self.mediaPlayer.play()
         self.paused = False
+        self.mediaPlayer.play()
+        
         
 
     def setVolume(self, Volume):
