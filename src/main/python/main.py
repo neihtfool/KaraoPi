@@ -107,6 +107,12 @@ def make_app():
         (r"/queue",QueueWebSocketHandler)
     ])
 
+
+def update_queue():
+    Window.v_window.search_window.currentVideo.setText(currentVideo)
+    Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
+
+
 if __name__ == '__main__':
     print("intialize server")
     app = make_app()
