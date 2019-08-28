@@ -14,6 +14,8 @@ class VideoWindow(QMainWindow):
     def __init__(self, parent=None):
         super(VideoWindow, self).__init__(parent)
         
+        self.paused = True
+
         self.instance = vlc.Instance()
         self.mediaPlayer = self.instance.media_list_player_new()
 
@@ -81,8 +83,10 @@ class VideoWindow(QMainWindow):
     def PlayPause(self, event):
         if self.mediaPlayer.is_playing():
             self.mediaPlayer.pause()
+            self.paused = True
         else:
             self.mediaPlayer.play()
+            self.paused = False
 
     def Stop(self):
         self.mediaPlayer.stop()
@@ -104,6 +108,7 @@ class VideoWindow(QMainWindow):
             self.mediaPlayer.set_nsobject(int(self.videoframe.winId()))
 
         self.mediaPlayer.play()
+        self.paused = False
         
 
     def setVolume(self, Volume):

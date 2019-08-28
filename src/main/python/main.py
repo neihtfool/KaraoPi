@@ -92,7 +92,7 @@ def setPlayer():
     global currentVideo
     global queue
     while True:
-        if not window.v_window.mediaPlayer.is_playing():
+        if not (window.v_window.mediaPlayer.is_playing() or Window.v_window.paused):
             if queue:
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
@@ -108,18 +108,19 @@ def make_app():
     ])
 
 if __name__ == '__main__':
-    print("server")
+    print("intialize server")
     app = make_app()
     app.listen(8000)
+
+    print("intialize Websocket Push Service")
     main_loop = tornado.ioloop.IOLoop.current()
     main_loop.add_timeout(datetime.timedelta(seconds=5), QueueWebSocketHandler.send_message)
     _thread.start_new_thread(main_loop.start, ())
     
-    print("Qt")
+    print("Initialize Videoframe")
     window = Window()
     window.v_window.show()
-
-    #_thread.start_new_thread(setPlayer, ())
+    _thread.start_new_thread(setPlayer, ())
 
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)
