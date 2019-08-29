@@ -47,7 +47,7 @@ class SearchWindow(QWidget):
         self.hbox = QHBoxLayout()
         self.hbox.addWidget(self.textbox)
         self.hbox.addWidget(self.button)
-        self.hbox.setSpacing(0)
+        self.hbox.setSpacing(10)
         self.hbox.setContentsMargins(5, 5, 5, 5)
 
         self.vbox = QVBoxLayout()
@@ -79,6 +79,7 @@ class SearchWindow(QWidget):
             qItem = QStandardItem()
             qItem.setText(title)
             qItem.setIcon(image)
+            qItem.setCheckable(True)
 
             self.model.appendRow(qItem)
             self.tmp[title] = youtube.get_id(item)
