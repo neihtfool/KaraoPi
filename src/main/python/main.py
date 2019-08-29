@@ -94,13 +94,15 @@ def setPlayer():
     while True:
         if not (window.v_window.mediaPlayer.is_playing() or Window.v_window.paused):
             if queue:
+                print(Window.v_window.paused)
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
                 time.sleep(0.3)
                 Window.v_window.search_window.currentVideo.setText(currentVideo)
                 Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
-
+        if window.v_window.mediaPlayer.is_playing() and Window.v_window.paused:
+            Window.v_window.paused = False
 
 def make_app():
     return tornado.web.Application([
