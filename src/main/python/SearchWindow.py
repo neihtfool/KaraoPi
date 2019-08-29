@@ -37,9 +37,8 @@ class SearchWindow(QWidget):
         self.model = QStandardItemModel(self.searchResultsList)
         self.searchResultsList.clicked.connect(self.clicked_item)
 
-        self.queueList = QListView()
+        self.queueList = QListWidget()
         self.queueList.setIconSize(QSize(90,90))
-        self.queueModel = QStandardItemModel(self.queueList)
 
         self.button = QPushButton('Search', self)
         self.button.clicked.connect(self.search)
@@ -79,7 +78,6 @@ class SearchWindow(QWidget):
             qItem = QStandardItem()
             qItem.setText(title)
             qItem.setIcon(image)
-            qItem.setCheckable(True)
 
             self.model.appendRow(qItem)
             self.tmp[title] = youtube.get_id(item)
@@ -94,17 +92,21 @@ class SearchWindow(QWidget):
         try:
             res = http_client.fetch('http://localhost:8000/add', method='POST', headers=None, body=body)
             content = json.loads(res.body.decode("utf-8"))
+            self.setupQueue(content['queue'])
+            self.currentVideo.setText(content['currentVideo'])
         except Exception as e:
             print(str(e))
-        
 
     def setupQueue(self, queue):
-        self.queueModel.clear()
-        for q in queue:
-            qItem = QStandardItem(q)
-            self.queueModel.appendRow(qItem)
-        self.queueList.setModel(self.queueModel)
+        self.queueList.clear()
+        for i in range(0, len(queue)):
+            list_item = CustomListItem(i)
+            list_item.setTitle(queue[i])
+            
+            q_list_widget_item = QListWidgetItem(self.queueList)
+            q_list_widget_item.setSizeHint(list_item.sizeHint())
+            self.queueList.addItem(q_list_widget_item)
+            self.queueList.setItemWidget(q_list_widget_item, list_item)
 
-
-
-
+    def remove_item(self, index):
+        print("DELETE", index)

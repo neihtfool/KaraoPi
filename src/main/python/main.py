@@ -76,11 +76,7 @@ class AddVideoHandler(tornado.web.RequestHandler):
         title = self.get_argument("title", NODATA)
         video_id = self.get_argument('video_id', NODATA)
         queue.appendleft({'title': title, 'video_id': video_id})
-
-        Window.v_window.search_window.currentVideo.setText(currentVideo)
-        Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
-
-        self.write("Added " + title + " to queue!")
+        self.write(createQueueResponse())
 
         
 def createQueueResponse():
@@ -98,8 +94,6 @@ def setPlayer():
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
                 time.sleep(0.3)
-                Window.v_window.search_window.currentVideo.setText(currentVideo)
-                Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
 
 
 def make_app():
