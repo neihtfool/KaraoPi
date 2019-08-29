@@ -70,6 +70,15 @@ class QueueWebSocketHandler(tornado.websocket.WebSocketHandler):
         tornado.ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=3), QueueWebSocketHandler.send_message)
 
 
+class RemoveVideoHandler(tornado.web.RequestHandler):
+    def post(self):
+        print("aha")
+        global queue
+        index = self.get_argument("index", NODATA)
+        del queue[len(queue) - 1 - index]
+        self.write("Done")
+
+
 class AddVideoHandler(tornado.web.RequestHandler):    
     def post(self):
         global queue
@@ -99,6 +108,7 @@ def setPlayer():
 def make_app():
     return tornado.web.Application([
         (r"/add", AddVideoHandler),
+        (r"/remove", RemoveVideoHandler),
         (r"/queue",QueueWebSocketHandler)
     ])
 

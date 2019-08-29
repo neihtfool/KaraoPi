@@ -107,6 +107,3 @@ class SearchWindow(QWidget):
             q_list_widget_item.setSizeHint(list_item.sizeHint())
             self.queueList.addItem(q_list_widget_item)
             self.queueList.setItemWidget(q_list_widget_item, list_item)
-
-    def remove_item(self, index):
-        print("DELETE", index)

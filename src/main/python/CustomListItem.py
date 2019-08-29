@@ -1,7 +1,9 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 from PyQt5.QtGui import QPixmap
-
+from tornado.httpclient import HTTPClient
+import json
+import urllib
 
 class CustomListItem(QWidget):
     def __init__(self, index, parent=None):
@@ -23,4 +25,8 @@ class CustomListItem(QWidget):
         self.titleQLabel.setText(text)
     
     def remove(self):
-        print(self.index)
+        http_client = HTTPClient()
+        data = urllib.parse.urlencode({'index': self.index })
+        res = http_client.fetch('http://localhost:8000/remove', method='POST', headers=None, body=data)
+        content = res.body.decode("utf-8")
+        print(content)
