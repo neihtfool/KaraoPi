@@ -34,6 +34,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 class Window():
     appctxt = ApplicationContext()
     stylesheet = appctxt.get_resource('styles.qss')
@@ -98,11 +99,11 @@ def setPlayer():
     while True:
         if not (window.v_window.mediaPlayer.is_playing() or Window.v_window.paused):
             if queue:
+                print(Window.v_window.paused)
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
                 time.sleep(0.3)
-
 
 def make_app():
     return tornado.web.Application([
@@ -123,6 +124,7 @@ if __name__ == '__main__':
     
     print("Initialize Videoframe")
     window = Window()
+    window.v_window.search_window.start_listener()
     window.v_window.show()
     _thread.start_new_thread(setPlayer, ())
 

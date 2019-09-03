@@ -1,20 +1,42 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
 from tornado.httpclient import HTTPClient, HTTPRequest
 from functools import partial
+import asyncio
+import websockets
 import youtube_api as youtube
 import json
 import urllib
 
 
+class WebSocketListener(QThread):
+
+    queue = pyqtSignal(object)
+
+    def __init__(self, parent=None):
+        super(WebSocketListener, self).__init__(parent)
+    
+    def run(self):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.fetch())
+    
+    async def fetch(self):
+        uri = "ws://localhost:8000/queue"
+        async with websockets.connect(uri) as websocket:
+            while True:
+                msg = await websocket.recv()
+                content = json.loads(msg)
+                self.queue.emit(content)
+
+
 class SearchWindow(QWidget):
     def __init__(self):
         super().__init__()
-    
-        self.tmp = {}
 
+        self.tmp = {}
         self.textbox = QLineEdit(self)
         self.textbox.returnPressed.connect(self.search)
 
@@ -22,9 +44,10 @@ class SearchWindow(QWidget):
         self.searchResultLabel.setText("Search Results")
         self.searchResultLabel.setStyleSheet('color: white')
 
+        self.currentVideo = QLabel()
         self.currentVideoLabel = QLabel("Currently Playing: ")
         self.currentVideoLabel.setStyleSheet('color: white')
-        self.currentVideo = QLabel()
+
         self.currentVideo.setStyleSheet('color: white')
         self.currentVideoHBox = QHBoxLayout()
         self.currentVideoHBox.addWidget(self.currentVideoLabel)
@@ -61,6 +84,15 @@ class SearchWindow(QWidget):
         self.vbox.setContentsMargins(5, 5, 5, 5)
 
         self.setLayout(self.vbox)
+    
+    def start_listener(self):
+        self.listener_thread = WebSocketListener()
+        self.listener_thread.queue.connect(self.on_data_ready)
+        self.listener_thread.start()
+
+    def on_data_ready(self, content):
+        self.setupQueue(content['queue'])
+        self.currentVideo.setText(content['currentVideo'])
 
     def search(self):
         textboxValue = self.textbox.text()

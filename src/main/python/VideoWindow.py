@@ -85,8 +85,8 @@ class VideoWindow(QMainWindow):
             self.mediaPlayer.pause()
             self.paused = True
         else:
-            self.mediaPlayer.play()
-            self.paused = False
+            if self.mediaPlayer.play():
+                self.paused = False
 
     def Stop(self):
         self.mediaPlayer.stop()
