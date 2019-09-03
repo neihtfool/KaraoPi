@@ -1,19 +1,41 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
 from tornado.httpclient import HTTPClient, HTTPRequest
+import asyncio
+import websockets
 import youtube_api as youtube
 import json
 import urllib
 
 
+class WebSocketListener(QThread):
+
+    queue = pyqtSignal(object)
+
+    def __init__(self, parent=None):
+        super(WebSocketListener, self).__init__(parent)
+    
+    def run(self):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.fetch())
+    
+    async def fetch(self):
+        uri = "ws://localhost:8000/queue"
+        async with websockets.connect(uri) as websocket:
+            while True:
+                msg = await websocket.recv()
+                content = json.loads(msg)
+                self.queue.emit(content)
+
+
 class SearchWindow(QWidget):
     def __init__(self):
         super().__init__()
-    
-        self.tmp = {}
 
+        self.tmp = {}
         self.textbox = QLineEdit(self)
         self.textbox.returnPressed.connect(self.search)
 
@@ -21,9 +43,10 @@ class SearchWindow(QWidget):
         self.searchResultLabel.setText("Search Results")
         self.searchResultLabel.setStyleSheet('color: white')
 
+        self.currentVideo = QLabel()
         self.currentVideoLabel = QLabel("Currently Playing: ")
         self.currentVideoLabel.setStyleSheet('color: white')
-        self.currentVideo = QLabel()
+
         self.currentVideo.setStyleSheet('color: white')
         self.currentVideoHBox = QHBoxLayout()
         self.currentVideoHBox.addWidget(self.currentVideoLabel)
@@ -37,9 +60,8 @@ class SearchWindow(QWidget):
         self.model = QStandardItemModel(self.searchResultsList)
         self.searchResultsList.clicked.connect(self.clicked_item)
 
-        self.queueList = QListView()
+        self.queueList = QListWidget()
         self.queueList.setIconSize(QSize(90,90))
-        self.queueModel = QStandardItemModel(self.queueList)
 
         self.button = QPushButton('Search', self)
         self.button.clicked.connect(self.search)
@@ -47,7 +69,7 @@ class SearchWindow(QWidget):
         self.hbox = QHBoxLayout()
         self.hbox.addWidget(self.textbox)
         self.hbox.addWidget(self.button)
-        self.hbox.setSpacing(0)
+        self.hbox.setSpacing(10)
         self.hbox.setContentsMargins(5, 5, 5, 5)
 
         self.vbox = QVBoxLayout()
@@ -61,6 +83,15 @@ class SearchWindow(QWidget):
         self.vbox.setContentsMargins(5, 5, 5, 5)
 
         self.setLayout(self.vbox)
+    
+    def start_listener(self):
+        self.listener_thread = WebSocketListener()
+        self.listener_thread.queue.connect(self.on_data_ready)
+        self.listener_thread.start()
+
+    def on_data_ready(self, content):
+        self.setupQueue(content['queue'])
+        self.currentVideo.setText(content['currentVideo'])
 
     def search(self):
         textboxValue = self.textbox.text()
@@ -93,17 +124,19 @@ class SearchWindow(QWidget):
         try:
             res = http_client.fetch('http://localhost:8000/add', method='POST', headers=None, body=body)
             content = json.loads(res.body.decode("utf-8"))
+            self.setupQueue(content['queue'])
+            self.currentVideo.setText(content['currentVideo'])
         except Exception as e:
             print(str(e))
-        
 
     def setupQueue(self, queue):
-        self.queueModel.clear()
-        for q in queue:
-            qItem = QStandardItem(q)
-            self.queueModel.appendRow(qItem)
-        self.queueList.setModel(self.queueModel)
-
-
-
-
+        self.queueList.clear()
+        for i in range(0, len(queue)):
+            list_item = CustomListItem(i)
+            list_item.setTitle(queue[i])
+            
+            q_list_widget_item = QListWidgetItem(self.queueList)
+            q_list_widget_item.setSizeHint(list_item.sizeHint())
+            self.queueList.addItem(q_list_widget_item)
+            self.queueList.setItemWidget(q_list_widget_item, list_item)
+    

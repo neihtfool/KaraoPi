@@ -34,6 +34,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 class Window():
     appctxt = ApplicationContext()
     stylesheet = appctxt.get_resource('styles.qss')
@@ -70,17 +71,22 @@ class QueueWebSocketHandler(tornado.websocket.WebSocketHandler):
         tornado.ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=3), QueueWebSocketHandler.send_message)
 
 
+class RemoveVideoHandler(tornado.web.RequestHandler):
+    def post(self):
+        print("aha")
+        global queue
+        index = self.get_argument("index", NODATA)
+        del queue[len(queue) - 1 - index]
+        self.write("Done")
+
+
 class AddVideoHandler(tornado.web.RequestHandler):    
     def post(self):
         global queue
         title = self.get_argument("title", NODATA)
         video_id = self.get_argument('video_id', NODATA)
         queue.appendleft({'title': title, 'video_id': video_id})
-
-        Window.v_window.search_window.currentVideo.setText(currentVideo)
-        Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
-
-        self.write("Added " + title + " to queue!")
+        self.write(createQueueResponse())
 
         
 def createQueueResponse():
@@ -99,14 +105,11 @@ def setPlayer():
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
                 time.sleep(0.3)
-                Window.v_window.search_window.currentVideo.setText(currentVideo)
-                Window.v_window.search_window.setupQueue(createQueueResponse()["queue"])
-        if window.v_window.mediaPlayer.is_playing() and Window.v_window.paused:
-            Window.v_window.paused = False
 
 def make_app():
     return tornado.web.Application([
         (r"/add", AddVideoHandler),
+        (r"/remove", RemoveVideoHandler),
         (r"/queue",QueueWebSocketHandler)
     ])
 
@@ -122,6 +125,7 @@ if __name__ == '__main__':
     
     print("Initialize Videoframe")
     window = Window()
+    window.v_window.search_window.start_listener()
     window.v_window.show()
     _thread.start_new_thread(setPlayer, ())
 

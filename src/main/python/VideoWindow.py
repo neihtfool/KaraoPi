@@ -110,8 +110,6 @@ class VideoWindow(QMainWindow):
         self.paused = False
         self.mediaPlayer.play()
         
-        
-
     def setVolume(self, Volume):
         self.mediaPlayer.audio_set_volume(Volume)
     
