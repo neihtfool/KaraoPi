@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
 from tornado.httpclient import HTTPClient, HTTPRequest
+from functools import partial
 import youtube_api as youtube
 import json
 import urllib
@@ -88,22 +89,30 @@ class SearchWindow(QWidget):
         title = self.model.itemFromIndex(item).text()
         data = {'title': title, 'video_id': self.tmp[title]}
         body = urllib.parse.urlencode(data)
-        http_client = HTTPClient()
-        try:
-            res = http_client.fetch('http://localhost:8000/add', method='POST', headers=None, body=body)
-            content = json.loads(res.body.decode("utf-8"))
-            self.setupQueue(content['queue'])
-            self.currentVideo.setText(content['currentVideo'])
-        except Exception as e:
-            print(str(e))
+        self.send_request(body, 'add')
 
     def setupQueue(self, queue):
         self.queueList.clear()
         for i in range(0, len(queue)):
             list_item = CustomListItem(i)
             list_item.setTitle(queue[i])
-            
+            list_item.remove_button.clicked.connect(partial( self.remove, index=i))
+
             q_list_widget_item = QListWidgetItem(self.queueList)
             q_list_widget_item.setSizeHint(list_item.sizeHint())
             self.queueList.addItem(q_list_widget_item)
             self.queueList.setItemWidget(q_list_widget_item, list_item)
+
+    def remove(self, index):
+        body = urllib.parse.urlencode({'index': index })
+        self.send_request(body, 'remove')
+
+    def send_request(self, body, endpoint):
+        http_client = HTTPClient()
+        try:
+            res = http_client.fetch('http://localhost:8000/' + endpoint, method='POST', headers=None, body=body)
+            content = json.loads(res.body.decode("utf-8"))
+            self.setupQueue(content['queue'])
+            self.currentVideo.setText(content['currentVideo'])
+        except Exception as e:
+            print(str(e))

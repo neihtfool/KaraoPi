@@ -72,11 +72,10 @@ class QueueWebSocketHandler(tornado.websocket.WebSocketHandler):
 
 class RemoveVideoHandler(tornado.web.RequestHandler):
     def post(self):
-        print("aha")
         global queue
         index = self.get_argument("index", NODATA)
-        del queue[len(queue) - 1 - index]
-        self.write("Done")
+        del queue[len(queue) - 1 - int(index)]
+        self.write(createQueueResponse())
 
 
 class AddVideoHandler(tornado.web.RequestHandler):    
