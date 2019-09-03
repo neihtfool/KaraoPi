@@ -8,11 +8,9 @@ import urllib
 class CustomListItem(QWidget):
     def __init__(self, index, parent=None):
         super(CustomListItem, self).__init__(parent)
-        self.index = index
         self.textVBox = QVBoxLayout()
         self.remove_button = QPushButton('X', self)
         self.remove_button.resize(5, 5)
-        #self.remove_button.clicked.connect(self.remove)
         self.titleQLabel = QLabel()
 
         self.hbox_layout = QHBoxLayout()

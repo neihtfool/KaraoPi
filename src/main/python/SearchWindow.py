@@ -94,7 +94,7 @@ class SearchWindow(QWidget):
     def setupQueue(self, queue):
         self.queueList.clear()
         for i in range(0, len(queue)):
-            list_item = CustomListItem(i)
+            list_item = CustomListItem()
             list_item.setTitle(queue[i])
             list_item.remove_button.clicked.connect(partial( self.remove, index=i))
 
