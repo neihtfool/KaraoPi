@@ -6,7 +6,7 @@ import json
 import urllib
 
 class CustomListItem(QWidget):
-    def __init__(self, index, parent=None):
+    def __init__(self, parent=None):
         super(CustomListItem, self).__init__(parent)
         self.textVBox = QVBoxLayout()
         self.remove_button = QPushButton('X', self)

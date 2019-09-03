@@ -99,7 +99,6 @@ def setPlayer():
     while True:
         if not (window.v_window.mediaPlayer.is_playing() or Window.v_window.paused):
             if queue:
-                print(Window.v_window.paused)
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
                 Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
