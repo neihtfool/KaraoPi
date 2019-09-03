@@ -8,11 +8,9 @@ import urllib
 class CustomListItem(QWidget):
     def __init__(self, index, parent=None):
         super(CustomListItem, self).__init__(parent)
-        self.index = index
         self.textVBox = QVBoxLayout()
         self.remove_button = QPushButton('X', self)
         self.remove_button.resize(5, 5)
-        self.remove_button.clicked.connect(self.remove)
         self.titleQLabel = QLabel()
 
         self.hbox_layout = QHBoxLayout()
@@ -23,10 +21,3 @@ class CustomListItem(QWidget):
 
     def setTitle(self, text):
         self.titleQLabel.setText(text)
-    
-    def remove(self):
-        http_client = HTTPClient()
-        data = urllib.parse.urlencode({'index': self.index })
-        res = http_client.fetch('http://localhost:8000/remove', method='POST', headers=None, body=data)
-        content = res.body.decode("utf-8")
-        print(content)
