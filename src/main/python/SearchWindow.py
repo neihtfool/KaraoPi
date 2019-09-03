@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel
-from PyQt5.QtCore import Qt, QSize, QThread
+from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
 from tornado.httpclient import HTTPClient, HTTPRequest
@@ -11,6 +11,9 @@ import urllib
 
 
 class WebSocketListener(QThread):
+
+    queue = pyqtSignal(object)
+
     def __init__(self, parent=None):
         super(WebSocketListener, self).__init__(parent)
     
@@ -23,8 +26,9 @@ class WebSocketListener(QThread):
         uri = "ws://localhost:8000/queue"
         async with websockets.connect(uri) as websocket:
             while True:
-                queue = await websocket.recv()
-                print(queue)
+                msg = await websocket.recv()
+                content = json.loads(msg)
+                self.queue.emit(content)
 
 
 class SearchWindow(QWidget):
@@ -39,9 +43,10 @@ class SearchWindow(QWidget):
         self.searchResultLabel.setText("Search Results")
         self.searchResultLabel.setStyleSheet('color: white')
 
+        self.currentVideo = QLabel()
         self.currentVideoLabel = QLabel("Currently Playing: ")
         self.currentVideoLabel.setStyleSheet('color: white')
-        self.currentVideo = QLabel()
+
         self.currentVideo.setStyleSheet('color: white')
         self.currentVideoHBox = QHBoxLayout()
         self.currentVideoHBox.addWidget(self.currentVideoLabel)
@@ -81,7 +86,12 @@ class SearchWindow(QWidget):
     
     def start_listener(self):
         self.listener_thread = WebSocketListener()
+        self.listener_thread.queue.connect(self.on_data_ready)
         self.listener_thread.start()
+
+    def on_data_ready(self, content):
+        self.setupQueue(content['queue'])
+        self.currentVideo.setText(content['currentVideo'])
 
     def search(self):
         textboxValue = self.textbox.text()
