@@ -34,6 +34,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 class Window():
     appctxt = ApplicationContext()
     stylesheet = appctxt.get_resource('styles.qss')
@@ -124,6 +125,7 @@ if __name__ == '__main__':
     
     print("Initialize Videoframe")
     window = Window()
+    window.v_window.search_window.start_listener()
     window.v_window.show()
     _thread.start_new_thread(setPlayer, ())
 
