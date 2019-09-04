@@ -20,7 +20,6 @@ import datetime
 
 queue = deque([])
 currentVideo = ""
-clients = set()
 
 NODATA = "No data received!"
 
@@ -46,7 +45,6 @@ class QueueWebSocketHandler(tornado.websocket.WebSocketHandler):
     connections = set()
 
     def open(self):
-        clients.add(self)
         self.connections.add(self)
         self.write_message(createQueueResponse())
     
