@@ -91,6 +91,17 @@ class AddVideoHandler(tornado.web.RequestHandler):
         queue.appendleft({'title': title, 'video_id': video_id})
         self.write(createQueueResponse())
 
+
+class xAddVideoHandler(tornado.web.RequestHandler):    
+    def post(self):
+        global queue
+        data = json.loads(self.request.body.decode('utf-8'))
+        title = data['title']
+        video_id = data['video_id']
+        queue.appendleft({'title': title, 'video_id': video_id})
+        self.write(title + " added.")
+        
+
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('../web/index.html', url=IP_ADDR)
@@ -98,7 +109,6 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class YTHandler(tornado.web.RequestHandler):
     def post(self):
-        print(self)
         data = json.loads(self.request.body.decode('utf-8'))
         q = data['query']
         results = youtube.search(q)
@@ -131,6 +141,7 @@ def make_app():
         (r"/", IndexHandler),
         (r"/images/(.*)",tornado.web.StaticFileHandler, {"path": "./src/main/web/images/"},),
         (r"/add", AddVideoHandler),
+        (r"/xAdd", xAddVideoHandler),
         (r"/remove", RemoveVideoHandler),
         (r"/search", YTHandler),
         (r"/queue",QueueWebSocketHandler)

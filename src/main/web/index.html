@@ -113,6 +113,7 @@
           </div>
           <script>
             var ip_addr = "{{ url }}"
+            
             function search() {
               const xhr = new XMLHttpRequest();
               const url = 'http://' + ip_addr + ':8000/search';
@@ -127,7 +128,11 @@
                     var btn = document.createElement("button")
                     btn.id = k
                     btn.className = "w3-button"
+                    btn.value = json[k]
                     btn.innerHTML = json[k]
+                    btn.addEventListener('click', function() {
+                      addToQueue(btn.id, btn.value)
+                    })
                     var p = document.createElement("p")
                     p.className = "ow"
                     p.appendChild(btn)
@@ -140,6 +145,24 @@
               
               xhr.send(data);
             }
+
+
+            function addToQueue(id, value) {
+              const xhr = new XMLHttpRequest();
+              const url = 'http://' + ip_addr + ':8000/xAdd';
+              var data = JSON.stringify({'title': value, 'video_id': id})
+              xhr.open("POST", url, true);
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  var msg = xhr.responseText;
+                  console.log(msg)  
+                }
+              }
+              
+              xhr.send(data);
+            }
+
 
             const ws_url = "ws://" + ip_addr + ":8000/queue"
             const ws = new WebSocket(ws_url)
