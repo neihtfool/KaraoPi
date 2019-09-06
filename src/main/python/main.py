@@ -23,7 +23,7 @@ import socket
 
 
 IP_ADDR = socket.gethostbyname(socket.gethostname())
-
+PORT = 8000
 queue = deque([])
 currentVideo = ""
 
@@ -100,7 +100,7 @@ class xAddVideoHandler(tornado.web.RequestHandler):
         video_id = data['video_id']
         queue.appendleft({'title': title, 'video_id': video_id})
         self.write(title + " added.")
-        
+
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
@@ -150,7 +150,7 @@ def make_app():
 if __name__ == '__main__':
     print("intialize server")
     app = make_app()
-    app.listen(8000)
+    app.listen(PORT)
 
     print("intialize Websocket Push Service")
     main_loop = tornado.ioloop.IOLoop.current()
