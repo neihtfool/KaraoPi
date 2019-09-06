@@ -123,19 +123,31 @@
           </div>
           <script>
             function search() {
-              const http = new XMLHttpRequest();
+              const xhr = new XMLHttpRequest();
               const url = 'http://localhost:8000/search';
               var query = document.getElementById("searchBox").value;
-              var params = "query=" + query
-              http.open("GET", url, true);
-              http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-              http.onreadystatechange == function() {
-                if (http.readyState == 4 && http.status == 200) {
-                  alert(http.responseText);
+              var data = JSON.stringify({"query": query});
+              xhr.open("POST", url, true);
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  var json = JSON.parse(xhr.responseText);
+                  Object.keys(json).forEach(function(k){
+                    var btn = document.createElement("button")
+                    btn.id = k
+                    btn.className = "w3-button"
+                    btn.innerHTML = json[k]
+                    var p = document.createElement("p")
+                    p.className = "ow"
+                    p.appendChild(btn)
+                    var div = document.getElementById("results")
+                    div.appendChild(p)
+                    console.log(k + ' - ' + json[k]);
+                  });
                 }
               }
               
-              http.send(params);
+              xhr.send(data);
             }
           </script>
     </body>

@@ -95,19 +95,19 @@ class IndexHandler(tornado.web.RequestHandler):
 
 
 class YTHandler(tornado.web.RequestHandler):
-    def set_default_headers(self):
-        print("setting headers!!!")
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
-        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-
-    def get(self):
-        print("=================================================")
-        query = self.get_argument("query", NODATA)
-
-        print(query)
-        results = youtube.search(query)
-        self.write(results)
+    def post(self):
+        print("========================")
+        print(self)
+        data = json.loads(self.request.body.decode('utf-8'))
+        q = data['query']
+        results = youtube.search(q)
+        res = {}
+        for r in results:
+            res[youtube.get_id(r)] = youtube.get_title(r)
+        self.set_status(200)
+        self.write(res)
+        self.finish()
+        
         
         
 def createQueueResponse():
