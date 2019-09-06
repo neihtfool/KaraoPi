@@ -110,10 +110,10 @@
               <div class="w3-container">
                   <p>Add a Video by clicking/pressing on it</p>
                   <input id="maxResults" class="w3-input w3-border" type="number" placeholder="max. Search results. Default: 5">
-                <form onsubmit="execute()" target="_self">
-                  <p><input id="query" class="w3-input w3-padding-16 w3-border" type="text" placeholder="Search" required query="Query"></p>
-                  <p><button class="w3-button" type="submit">SEARCH</button></p>
-                </form>
+
+                  <p><input id="searchBox" class="w3-input w3-padding-16 w3-border" type="text" placeholder="Search" required query="Query"></p>
+                  <p><button onclick="search();" id="search-button" class="w3-button" type="submit">SEARCH</button></p>
+
                 <div id="results">
                   <p class="ow"><button class="w3-button">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</button></p>
                   <p class="ow"><button class="w3-button">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</button></p>
@@ -121,50 +121,22 @@
               </div>
             </div>
           </div>
-
-          <script src="https://apis.google.com/js/api.js"></script>
           <script>
-            const YT_TOKEN = "AIzaSyDPeoC9ieVvWFO7LR8djmqtvw0M_5z_EAw"
-            const CLIENT_ID ="519527664323-2m80t2h422snps2682mhhlb92r8ejeef.apps.googleusercontent.com"
-            function authenticate() {
-              return gapi.auth2.getAuthInstance()
-                                .signIn({scope: "https://www.googleapis.com/auth/youtube.readonly"})
-                                .then(function() { console.log("Sign-in successful"); },
-                                      function(err) { console.error("Error signing in", err); });
-            }
-
-            function loadClient() {
-              gapi.client.setApiKey(YT_TOKEN);
-              return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
-                  .then(function() { console.log("GAPI client loaded for API"); },
-                        function(err) { console.error("Error loading GAPI client for API", err); });
-            }
-  
-            function execute() {
-              authenticate().then(loadClient)
-              var query = document.getElementById("query").value;
-              var maxResults = 5;
-              var val = document.getElementById("maxResults").value;
-              if (val != null) {
-                max = parseInt(val)
+            function search() {
+              const http = new XMLHttpRequest();
+              const url = 'http://localhost:8000/search';
+              var query = document.getElementById("searchBox").value;
+              var params = "query=" + query
+              http.open("GET", url, true);
+              http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+              http.onreadystatechange == function() {
+                if (http.readyState == 4 && http.status == 200) {
+                  alert(http.responseText);
+                }
               }
-              return gapi.client.youtube.search.list({
-                "part": "snippet",
-                "maxResults": maxResults,
-                "q": query
-              })
-                  .then(function(response) {
-                          // Handle the results here (response.result has the parsed body).
-                          console.log("Response", response);
-                        },
-                        function(err) { console.error("Execute error", err); });
-            }
-  
-            gapi.load("client:auth2", function() {
-              console.log("success")
-              gapi.auth2.init({client_id: CLIENT_ID});
               
-            });
+              http.send(params);
+            }
           </script>
     </body>
 </html>

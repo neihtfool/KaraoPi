@@ -8,6 +8,7 @@ from io import BytesIO
 from urllib.parse import parse_qs
 from collections import deque
 from tornado.platform import asyncio
+import youtube_api as youtube
 import sys
 import os
 import _thread
@@ -92,6 +93,22 @@ class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('../web/index.html')
 
+
+class YTHandler(tornado.web.RequestHandler):
+    def set_default_headers(self):
+        print("setting headers!!!")
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+
+    def get(self):
+        print("=================================================")
+        query = self.get_argument("query", NODATA)
+
+        print(query)
+        results = youtube.search(query)
+        self.write(results)
+        
         
 def createQueueResponse():
     response_queue = [elem['title'] for elem in reversed(queue)]
@@ -115,6 +132,7 @@ def make_app():
         (r"/images/(.*)",tornado.web.StaticFileHandler, {"path": "./src/main/web/images/"},),
         (r"/add", AddVideoHandler),
         (r"/remove", RemoveVideoHandler),
+        (r"/search", YTHandler),
         (r"/queue",QueueWebSocketHandler)
     ])
 
