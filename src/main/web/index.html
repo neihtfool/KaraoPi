@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <style>
+          .dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px;
+            font-size: 15px;
+            border: none;
+          }
+          .dropdown {
+            position: relative;
+            display: inline-block;
+          }
+
+          .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+          }
+
+          .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+          }
+
+          .dropdown-content a:hover {background-color: #ddd;}
+          .dropdown:hover .dropdown-content {display: block;}
+          .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+          .ow {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .w3-sidebar a {font-family: "Roboto", sans-serif}
+          body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
+          body, html {height: 100%}
+          .bgimg {
+            background-image: url('images/home.jpg');
+            min-height: 100%;
+            background-position: center;
+            background-size: cover;
+          }
+        </style>
+    </head>
+    <body>
+        <div class="bgimg w3-display-container w3-text-white">
+            <div class="w3-display-middle w3-jumbo">
+              <p>KaraoPi</p>
+            </div>
+            <div class="w3-display-topleft w3-container w3-xlarge">
+              <p><button onclick="document.getElementById('menu').style.display='block'" class="w3-button w3-black">Queue</button></p>
+              <p><button onclick="document.getElementById('contact').style.display='block'" class="w3-button w3-black">Search/Add Video</button></p>
+            </div>
+            <div class="w3-display-bottomleft w3-container">
+              <p class="w3-xlarge">Currently Playing:</p>
+              <p class="w3-large">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
+              <p>Next: Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
+            </div>
+          </div>
+          
+          <!-- Menu Modal -->
+          <div id="menu" class="w3-modal">
+            <div class="w3-modal-content w3-animate-zoom">
+              <div class="w3-container w3-black w3-display-container">
+                <span onclick="document.getElementById('menu').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                <h1>Queue</h1>
+              </div>
+              <div class="w3-container">
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Modal -->
+          <div id="contact" class="w3-modal">
+            <div class="w3-modal-content w3-animate-zoom">
+              <div class="w3-container w3-black">
+                <span onclick="document.getElementById('contact').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                <h1>Search/Add Video</h1>
+              </div>
+              <div class="w3-container">
+                  <p>Add a Video by clicking/pressing on it</p>
+                  <input id="maxResults" class="w3-input w3-border" type="number" placeholder="max. Search results. Default: 5">
+                <form onsubmit="execute()" target="_self">
+                  <p><input id="query" class="w3-input w3-padding-16 w3-border" type="text" placeholder="Search" required query="Query"></p>
+                  <p><button class="w3-button" type="submit">SEARCH</button></p>
+                </form>
+                <div id="results">
+                  <p class="ow"><button class="w3-button">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</button></p>
+                  <p class="ow"><button class="w3-button">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</button></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script src="https://apis.google.com/js/api.js"></script>
+          <script>
+            const YT_TOKEN = "AIzaSyDPeoC9ieVvWFO7LR8djmqtvw0M_5z_EAw"
+            const CLIENT_ID ="519527664323-2m80t2h422snps2682mhhlb92r8ejeef.apps.googleusercontent.com"
+            function authenticate() {
+              return gapi.auth2.getAuthInstance()
+                                .signIn({scope: "https://www.googleapis.com/auth/youtube.readonly"})
+                                .then(function() { console.log("Sign-in successful"); },
+                                      function(err) { console.error("Error signing in", err); });
+            }
+
+            function loadClient() {
+              gapi.client.setApiKey(YT_TOKEN);
+              return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+                  .then(function() { console.log("GAPI client loaded for API"); },
+                        function(err) { console.error("Error loading GAPI client for API", err); });
+            }
+  
+            function execute() {
+              authenticate().then(loadClient)
+              var query = document.getElementById("query").value;
+              var maxResults = 5;
+              var val = document.getElementById("maxResults").value;
+              if (val != null) {
+                max = parseInt(val)
+              }
+              return gapi.client.youtube.search.list({
+                "part": "snippet",
+                "maxResults": maxResults,
+                "q": query
+              })
+                  .then(function(response) {
+                          // Handle the results here (response.result has the parsed body).
+                          console.log("Response", response);
+                        },
+                        function(err) { console.error("Execute error", err); });
+            }
+  
+            gapi.load("client:auth2", function() {
+              console.log("success")
+              gapi.auth2.init({client_id: CLIENT_ID});
+              
+            });
+          </script>
+    </body>
+</html>
