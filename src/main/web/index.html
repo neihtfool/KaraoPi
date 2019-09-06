@@ -75,8 +75,8 @@
             </div>
             <div class="w3-display-bottomleft w3-container">
               <p class="w3-xlarge">Currently Playing:</p>
-              <p class="w3-large">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
-              <p>Next: Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
+              <p id="activeVideo" class="w3-large">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
+              <p>Next:<span id="nextVideo"></span></p>
             </div>
           </div>
           
@@ -87,15 +87,7 @@
                 <span onclick="document.getElementById('menu').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
                 <h1>Queue</h1>
               </div>
-              <div class="w3-container">
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
-                <h5>Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</h5>
+              <div id="queue-container" class="w3-container">
               </div>
             </div>
           </div>
@@ -115,16 +107,15 @@
                   <p><button onclick="search();" id="search-button" class="w3-button" type="submit">SEARCH</button></p>
 
                 <div id="results">
-                  <p class="ow"><button class="w3-button">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</button></p>
-                  <p class="ow"><button class="w3-button">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</button></p>
                 </div>
               </div>
             </div>
           </div>
           <script>
+            var ip_addr = "{{ url }}"
             function search() {
               const xhr = new XMLHttpRequest();
-              const url = 'http://localhost:8000/search';
+              const url = 'http://' + ip_addr + ':8000/search';
               var query = document.getElementById("searchBox").value;
               var data = JSON.stringify({"query": query});
               xhr.open("POST", url, true);
@@ -142,12 +133,37 @@
                     p.appendChild(btn)
                     var div = document.getElementById("results")
                     div.appendChild(p)
-                    console.log(k + ' - ' + json[k]);
+                    
                   });
                 }
               }
               
               xhr.send(data);
+            }
+
+            const ws_url = "ws://" + ip_addr + ":8000/queue"
+            const ws = new WebSocket(ws_url)
+
+            ws.onmessage = function(evt) {
+              var msg = JSON.parse(evt.data)
+              setupQueue(msg["queue"])
+              document.getElementById("activeVideo").innerHTML = msg["currentVideo"]
+
+              var nextVid = msg["queue"][0]
+              if (typeof nextVid === "undefined") {
+                nextVid = ""
+              }
+              document.getElementById("nextVideo").innerHTML = nextVid
+            };
+
+            function setupQueue(queue) {
+              var div = document.getElementById("queue-container")
+              div.innerHTML = "";
+              for (q of queue) {
+                var h5 = document.createElement("h5");
+                h5.innerHTML = q
+                div.appendChild(h5);
+              }
             }
           </script>
     </body>

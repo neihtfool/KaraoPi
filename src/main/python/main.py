@@ -19,8 +19,10 @@ import tornado.web
 import tornado.websocket
 import threading
 import datetime
+import socket
 
-root = os.path.dirname(__file__)
+
+IP_ADDR = socket.gethostbyname(socket.gethostname())
 
 queue = deque([])
 currentVideo = ""
@@ -91,12 +93,11 @@ class AddVideoHandler(tornado.web.RequestHandler):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('../web/index.html')
+        self.render('../web/index.html', url=IP_ADDR)
 
 
 class YTHandler(tornado.web.RequestHandler):
     def post(self):
-        print("========================")
         print(self)
         data = json.loads(self.request.body.decode('utf-8'))
         q = data['query']
@@ -107,7 +108,6 @@ class YTHandler(tornado.web.RequestHandler):
         self.set_status(200)
         self.write(res)
         self.finish()
-        
         
         
 def createQueueResponse():
