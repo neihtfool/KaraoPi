@@ -10,6 +10,13 @@ import websockets
 import youtube_api as youtube
 import json
 import urllib
+import socket
+
+
+IP_ADDR = socket.gethostbyname(socket.gethostname())
+PORT = 8000
+URL = "http://" + IP_ADDR + ":" + str(PORT)
+
 
 
 class WebSocketListener(QThread):
@@ -80,6 +87,8 @@ class SearchWindow(QWidget):
         self.qr_icon.setPixmap(pixmap)
         self.resize(5, 5)
 
+        self.url_label = QLabel(URL)
+
         self.vbox = QVBoxLayout()
         self.vbox.addLayout(self.hbox)
         self.vbox.addWidget(self.searchResultLabel)
@@ -88,6 +97,7 @@ class SearchWindow(QWidget):
         self.vbox.addWidget(self.queueLabel)
         self.vbox.addWidget(self.queueList)
         self.vbox.addWidget(self.qr_icon)
+        self.vbox.addWidget(self.url_label)
         self.vbox.setSpacing(0)
         self.vbox.setContentsMargins(5, 5, 5, 5)
 

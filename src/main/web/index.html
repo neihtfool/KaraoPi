@@ -124,6 +124,9 @@
               xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                   var json = JSON.parse(xhr.responseText);
+                  var div = document.getElementById("results")
+                  div.innerHTML = ""
+                  
                   Object.keys(json).forEach(function(k){
                     var btn = document.createElement("button")
                     btn.id = k
@@ -136,7 +139,6 @@
                     var p = document.createElement("p")
                     p.className = "ow"
                     p.appendChild(btn)
-                    var div = document.getElementById("results")
                     div.appendChild(p)
                     
                   });
