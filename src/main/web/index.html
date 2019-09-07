@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <style>
+          .dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px;
+            font-size: 15px;
+            border: none;
+          }
+          .dropdown {
+            position: relative;
+            display: inline-block;
+          }
+
+          .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+          }
+
+          .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+          }
+
+          .dropdown-content a:hover {background-color: #ddd;}
+          .dropdown:hover .dropdown-content {display: block;}
+          .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+          .ow {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .w3-sidebar a {font-family: "Roboto", sans-serif}
+          body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
+          body, html {height: 100%}
+          .bgimg {
+            background-image: url('images/home.jpg');
+            min-height: 100%;
+            background-position: center;
+            background-size: cover;
+          }
+        </style>
+    </head>
+    <body>
+        <div class="bgimg w3-display-container w3-text-white">
+            <div class="w3-display-middle w3-jumbo">
+              <p>KaraoPi</p>
+            </div>
+            <div class="w3-display-topleft w3-container w3-xlarge">
+              <p><button onclick="document.getElementById('menu').style.display='block'" class="w3-button w3-black">Queue</button></p>
+              <p><button onclick="document.getElementById('contact').style.display='block'" class="w3-button w3-black">Search/Add Video</button></p>
+            </div>
+            <div class="w3-display-bottomleft w3-container">
+              <p class="w3-xlarge">Currently Playing:</p>
+              <p id="activeVideo" class="w3-large">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
+              <p>Next:<span id="nextVideo"></span></p>
+            </div>
+          </div>
+          
+          <!-- Menu Modal -->
+          <div id="menu" class="w3-modal">
+            <div class="w3-modal-content w3-animate-zoom">
+              <div class="w3-container w3-black w3-display-container">
+                <span onclick="document.getElementById('menu').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                <h1>Queue</h1>
+              </div>
+              <div id="queue-container" class="w3-container">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Modal -->
+          <div id="contact" class="w3-modal">
+            <div class="w3-modal-content w3-animate-zoom">
+              <div class="w3-container w3-black">
+                <span onclick="document.getElementById('contact').style.display='none'" class="w3-button w3-display-topright w3-large">x</span>
+                <h1>Search/Add Video</h1>
+              </div>
+              <div class="w3-container">
+                  <p>Add a Video by clicking/pressing on it</p>
+                  <input id="maxResults" class="w3-input w3-border" type="number" placeholder="max. Search results. Default: 5">
+
+                  <p><input id="searchBox" class="w3-input w3-padding-16 w3-border" type="text" placeholder="Search" required query="Query"></p>
+                  <p><button onclick="search();" id="search-button" class="w3-button" type="submit">SEARCH</button></p>
+
+                <div id="results">
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            var ip_addr = "{{ url }}"
+            
+            function search() {
+              const xhr = new XMLHttpRequest();
+              const url = 'http://' + ip_addr + ':8000/search';
+              var query = document.getElementById("searchBox").value;
+              var data = JSON.stringify({"query": query});
+              xhr.open("POST", url, true);
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  var json = JSON.parse(xhr.responseText);
+                  Object.keys(json).forEach(function(k){
+                    var btn = document.createElement("button")
+                    btn.id = k
+                    btn.className = "w3-button"
+                    btn.value = json[k]
+                    btn.innerHTML = json[k]
+                    btn.addEventListener('click', function() {
+                      addToQueue(btn.id, btn.value)
+                    })
+                    var p = document.createElement("p")
+                    p.className = "ow"
+                    p.appendChild(btn)
+                    var div = document.getElementById("results")
+                    div.appendChild(p)
+                    
+                  });
+                }
+              }
+              
+              xhr.send(data);
+            }
+
+
+            function addToQueue(id, value) {
+              const xhr = new XMLHttpRequest();
+              const url = 'http://' + ip_addr + ':8000/xAdd';
+              var data = JSON.stringify({'title': value, 'video_id': id})
+              xhr.open("POST", url, true);
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  var msg = xhr.responseText;
+                  console.log(msg)  
+                }
+              }
+              
+              xhr.send(data);
+            }
+
+
+            const ws_url = "ws://" + ip_addr + ":8000/queue"
+            const ws = new WebSocket(ws_url)
+
+            ws.onmessage = function(evt) {
+              var msg = JSON.parse(evt.data)
+              setupQueue(msg["queue"])
+              document.getElementById("activeVideo").innerHTML = msg["currentVideo"]
+
+              var nextVid = msg["queue"][0]
+              if (typeof nextVid === "undefined") {
+                nextVid = ""
+              }
+              document.getElementById("nextVideo").innerHTML = nextVid
+            };
+
+            function setupQueue(queue) {
+              var div = document.getElementById("queue-container")
+              div.innerHTML = "";
+              for (q of queue) {
+                var h5 = document.createElement("h5");
+                h5.innerHTML = q
+                div.appendChild(h5);
+              }
+            }
+          </script>
+    </body>
+</html>

@@ -8,7 +8,9 @@ from io import BytesIO
 from urllib.parse import parse_qs
 from collections import deque
 from tornado.platform import asyncio
+import youtube_api as youtube
 import sys
+import os
 import _thread
 import time
 import json
@@ -17,7 +19,11 @@ import tornado.web
 import tornado.websocket
 import threading
 import datetime
+import socket
 
+
+IP_ADDR = socket.gethostbyname(socket.gethostname())
+PORT = 8000
 queue = deque([])
 currentVideo = ""
 
@@ -85,6 +91,34 @@ class AddVideoHandler(tornado.web.RequestHandler):
         queue.appendleft({'title': title, 'video_id': video_id})
         self.write(createQueueResponse())
 
+
+class xAddVideoHandler(tornado.web.RequestHandler):    
+    def post(self):
+        global queue
+        data = json.loads(self.request.body.decode('utf-8'))
+        title = data['title']
+        video_id = data['video_id']
+        queue.appendleft({'title': title, 'video_id': video_id})
+        self.write(title + " added.")
+
+
+class IndexHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('../web/index.html', url=IP_ADDR)
+
+
+class YTHandler(tornado.web.RequestHandler):
+    def post(self):
+        data = json.loads(self.request.body.decode('utf-8'))
+        q = data['query']
+        results = youtube.search(q)
+        res = {}
+        for r in results:
+            res[youtube.get_id(r)] = youtube.get_title(r)
+        self.set_status(200)
+        self.write(res)
+        self.finish()
+        
         
 def createQueueResponse():
     response_queue = [elem['title'] for elem in reversed(queue)]
@@ -104,15 +138,19 @@ def setPlayer():
 
 def make_app():
     return tornado.web.Application([
+        (r"/", IndexHandler),
+        (r"/images/(.*)",tornado.web.StaticFileHandler, {"path": "./src/main/web/images/"},),
         (r"/add", AddVideoHandler),
+        (r"/xAdd", xAddVideoHandler),
         (r"/remove", RemoveVideoHandler),
+        (r"/search", YTHandler),
         (r"/queue",QueueWebSocketHandler)
     ])
 
 if __name__ == '__main__':
     print("intialize server")
     app = make_app()
-    app.listen(8000)
+    app.listen(PORT)
 
     print("intialize Websocket Push Service")
     main_loop = tornado.ioloop.IOLoop.current()
