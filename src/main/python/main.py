@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
     print("intialize Websocket Push Service")
     main_loop = tornado.ioloop.IOLoop.current()
-    main_loop.add_timeout(datetime.timedelta(seconds=5), QueueWebSocketHandler.send_message)
+    main_loop.add_timeout(datetime.timedelta(seconds=3), QueueWebSocketHandler.send_message)
     _thread.start_new_thread(main_loop.start, ())
     
     print("Initialize Videoframe")
