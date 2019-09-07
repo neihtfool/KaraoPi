@@ -8,7 +8,6 @@ import urllib
 
 TOKEN = os.environ['YT_TOKEN']
 
-
 def search(query):
     youtube = build('youtube', 'v3', developerKey=TOKEN)
     req = youtube.search().list(q=query, part='snippet', type='video') # default maxResults=5

@@ -3,7 +3,6 @@ from VideoWindow import VideoWindow
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QThread
-from PyQt5 import QtWebEngineWidgets
 from io import BytesIO
 from urllib.parse import parse_qs
 from collections import deque
@@ -22,8 +21,9 @@ import threading
 import datetime
 import socket
 
-
-IP_ADDR = socket.gethostbyname(socket.gethostname())
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+IP_ADDR = s.getsockname()[0]
 PORT = 8000
 URL = "http://" + IP_ADDR + ":" + str(PORT)
 
