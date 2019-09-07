@@ -1,7 +1,8 @@
 from SearchWindow import SearchWindow
-from PyQt5.QtCore import Qt, QTimer, QEventLoop 
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle, QApplication
-from PyQt5.QtGui import QIcon, QColor, QPalette
+from PyQt5.QtCore import Qt, QTimer, QEventLoop, QPoint
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QAction, QFrame, QSlider, QMainWindow, QStyle, QApplication, QLabel
+from PyQt5.QtGui import QIcon, QColor, QPalette, QPixmap
+from PIL.ImageQt import Image, ImageQt
 import _thread
 import time
 import sys
@@ -48,7 +49,17 @@ class VideoWindow(QMainWindow):
         self.positionSlider.setMaximum(1000)
         self.positionSlider.sliderMoved.connect(self.setPosition)
 
+        # self.qr_icon = QLabel(self)
+        # img = Image.open("./src/main/resources/qr.jpg")
+        # qimg = ImageQt(img.resize(10,10))
+        # pixmap = QPixmap.fromImage(qimg)
+        # # pixmap.scaled(5, 5)
+        # self.qr_icon.setPixmap(pixmap)
+        # # p = self.geometry().bottomRight() - self.qr_icon.geometry().bottomRight() - QPoint(100, 100)
+        # # self.qr_icon.move(p)
+
         self.hboxLayout = QHBoxLayout()
+        # self.hboxLayout.addWidget(self.qr_icon)
         self.hboxLayout.addWidget(self.positionSlider)
         self.hboxLayout.setSpacing(0)
         self.hboxLayout.setContentsMargins(0, 0, 0, 0)
@@ -113,3 +124,8 @@ class VideoWindow(QMainWindow):
     def setVolume(self, Volume):
         self.mediaPlayer.audio_set_volume(Volume)
     
+    def setup_qr_icon(self):
+        pixmap = QPixmap('./src/main/resources/qr.jpg')
+        self.icon.setPixmap(pixmap)
+        p = self.geometry().bottomRight() - self.icon.geometry().bottomRight() - QPoint(100, 100)
+        self.icon.move(p)
