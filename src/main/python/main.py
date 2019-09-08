@@ -3,7 +3,6 @@ from VideoWindow import VideoWindow
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QThread
-from PyQt5 import QtWebEngineWidgets
 from io import BytesIO
 from urllib.parse import parse_qs
 from collections import deque
