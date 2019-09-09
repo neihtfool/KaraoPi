@@ -34,7 +34,7 @@ class WebSocketListener(QThread):
         loop.run_until_complete(self.fetch())
     
     async def fetch(self):
-        uri = "ws://localhost:8000/queue"
+        uri = "ws://" + IP_ADDR + ":" + str(PORT) + "/queue"
         async with websockets.connect(uri) as websocket:
             while True:
                 msg = await websocket.recv()
@@ -141,7 +141,7 @@ class SearchWindow(QWidget):
         title = self.model.itemFromIndex(item).text()
         data = {'title': title, 'video_id': self.tmp[title]}
         body = urllib.parse.urlencode(data)
-        self.send_request(body, 'add')
+        self.send_request(body, '/add')
 
     def setupQueue(self, queue):
         self.queueList.clear()
@@ -157,12 +157,13 @@ class SearchWindow(QWidget):
 
     def remove(self, index):
         body = urllib.parse.urlencode({'index': index })
-        self.send_request(body, 'remove')
+        print(body)
+        self.send_request(body, '/remove')
 
     def send_request(self, body, endpoint):
         http_client = HTTPClient()
         try:
-            res = http_client.fetch('http://localhost:8000/' + endpoint, method='POST', headers=None, body=body)
+            res = http_client.fetch(URL + endpoint, method='POST', headers=None, body=body)
             content = json.loads(res.body.decode("utf-8"))
             self.setupQueue(content['queue'])
             self.currentVideo.setText(content['currentVideo'])
