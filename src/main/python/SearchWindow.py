@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel, QStyle
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel, QStyle, QApplication
 from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
@@ -61,7 +61,6 @@ class SearchWindow(QWidget):
         self.currentVideo = QLabel()
         self.currentVideoLabel = QLabel("Currently Playing: ")
         self.currentVideoLabel.setStyleSheet('color: white')
-
 
         self.skip_button = QPushButton()
         self.skip_button.setIcon(self.style().standardIcon(QStyle.SP_MediaSkipForward))
@@ -196,6 +195,13 @@ if __name__ == '__main__':
     window = SearchWindow()
     window.URL = URL
     window.url_label.setText(URL)
+
+    app = QApplication(sys.argv)
+
+    screen = app.primaryScreen()
+    size = screen.size()
+    window.setMaximumWidth(size.width())
+
     window.start_listener()
     window.showMaximized()
     exit_code = appctxt.app.exec_()
