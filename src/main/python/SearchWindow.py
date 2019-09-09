@@ -4,11 +4,21 @@ from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardI
 from CustomListItem import CustomListItem
 from tornado.httpclient import HTTPClient, HTTPRequest
 from functools import partial
+from PIL.ImageQt import ImageQt
 import asyncio
 import websockets
 import youtube_api as youtube
 import json
 import urllib
+import socket
+
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+IP_ADDR = s.getsockname()[0]
+s.close()
+PORT = 8000
+URL = "http://" + IP_ADDR + ":" + str(PORT)
 
 
 class WebSocketListener(QThread):
@@ -73,6 +83,14 @@ class SearchWindow(QWidget):
         self.hbox.setSpacing(10)
         self.hbox.setContentsMargins(5, 5, 5, 5)
 
+        self.qr_icon = QLabel(self)
+        img = ImageQt("./src/main/resources/qr.jpg")
+        pixmap = QPixmap.fromImage(img)
+        self.qr_icon.setPixmap(pixmap)
+        self.resize(5, 5)
+
+        self.url_label = QLabel(URL)
+
         self.vbox = QVBoxLayout()
         self.vbox.addLayout(self.hbox)
         self.vbox.addWidget(self.searchResultLabel)
@@ -80,6 +98,8 @@ class SearchWindow(QWidget):
         self.vbox.addLayout(self.currentVideoHBox)
         self.vbox.addWidget(self.queueLabel)
         self.vbox.addWidget(self.queueList)
+        self.vbox.addWidget(self.qr_icon)
+        self.vbox.addWidget(self.url_label)
         self.vbox.setSpacing(0)
         self.vbox.setContentsMargins(5, 5, 5, 5)
 

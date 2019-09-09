@@ -7,6 +7,7 @@ from io import BytesIO
 from urllib.parse import parse_qs
 from collections import deque
 from tornado.platform import asyncio
+from qr_code_gen import generate_qr_code
 import youtube_api as youtube
 import sys
 import os
@@ -26,23 +27,15 @@ s.connect(("8.8.8.8", 80))
 IP_ADDR = s.getsockname()[0]
 s.close()
 PORT = 8000
+URL = "http://" + IP_ADDR + ":" + str(PORT)
+
 queue = deque([])
 currentVideo = ""
 
 NODATA = "No data received!"
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
 class Window():
+    generate_qr_code(URL)
     appctxt = ApplicationContext()
     stylesheet = appctxt.get_resource('styles.qss')
     appctxt.app.setStyleSheet(open(stylesheet).read())

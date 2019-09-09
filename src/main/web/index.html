@@ -126,6 +126,9 @@
                   var div = document.getElementById("results")
                   div.innerHTML = ""
                   var json = JSON.parse(xhr.responseText);
+                  var div = document.getElementById("results")
+                  div.innerHTML = ""
+                  
                   Object.keys(json).forEach(function(k){
                     var btn = document.createElement("button")
                     btn.id = k
