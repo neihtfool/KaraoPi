@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QListWidget, QHBoxLayout, QVBoxLayout, QListWidgetItem, QListView, QLabel, QStyle
 from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 from PyQt5.QtGui import QTextDocument, QPixmap, QIcon, QStandardItem, QStandardItemModel
 from CustomListItem import CustomListItem
@@ -62,10 +62,19 @@ class SearchWindow(QWidget):
         self.currentVideoLabel = QLabel("Currently Playing: ")
         self.currentVideoLabel.setStyleSheet('color: white')
 
+
+        self.skip_button = QPushButton()
+        self.skip_button.setIcon(self.style().standardIcon(QStyle.SP_MediaSkipForward))
+        self.skip_button.clicked.connect(self.request_skip)
+        self.skip_button.setMaximumWidth(50)
+
         self.currentVideo.setStyleSheet('color: white')
         self.currentVideoHBox = QHBoxLayout()
         self.currentVideoHBox.addWidget(self.currentVideoLabel)
+        self.currentVideoHBox.addWidget(self.skip_button)
         self.currentVideoHBox.addWidget(self.currentVideo)
+        self.currentVideoHBox.setSpacing(25)
+        
 
         self.queueLabel = QLabel("Coming up next:")
         self.queueLabel.setStyleSheet('color: white')
@@ -174,6 +183,8 @@ class SearchWindow(QWidget):
         except Exception as e:
             print(str(e))
 
+    def request_skip(self):
+        self.send_request("", "/skip")
 
 if __name__ == '__main__':
     IP_ADDR = input("Enter address of server (192.xxx.xxx.xx): ")
@@ -186,6 +197,6 @@ if __name__ == '__main__':
     window.URL = URL
     window.url_label.setText(URL)
     window.start_listener()
-    window.showFullScreen()
+    window.showMaximized()
     exit_code = appctxt.app.exec_()
     sys.exit(0)

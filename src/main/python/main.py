@@ -121,6 +121,12 @@ class YTHandler(tornado.web.RequestHandler):
         self.write(res)
         self.finish()
         
+
+class SkipHandler(tornado.web.RequestHandler):
+    def post(self):
+        write_data(currentVideo, "skipped.txt")
+        window.v_window.PlayPause(None)
+        self.finish()
         
 def createQueueResponse():
     response_queue = [elem['title'] for elem in reversed(queue)]
@@ -146,7 +152,8 @@ def make_app():
         (r"/xAdd", xAddVideoHandler),
         (r"/remove", RemoveVideoHandler),
         (r"/search", YTHandler),
-        (r"/queue",QueueWebSocketHandler)
+        (r"/queue",QueueWebSocketHandler),
+        (r"/skip", SkipHandler)
     ])
 
 if __name__ == '__main__':
