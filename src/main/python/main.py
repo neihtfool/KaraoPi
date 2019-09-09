@@ -125,7 +125,7 @@ def setPlayer():
     global currentVideo
     global queue
     while True:
-        if not (window.v_window.mediaPlayer.is_playing() or Window.v_window.paused):
+        if not window.v_window.mediaPlayer.is_playing():
             if queue:
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
@@ -155,7 +155,6 @@ if __name__ == '__main__':
     
     print("Initialize Videoframe")
     window = Window()
-    window.v_window.search_window.start_listener()
     window.v_window.show()
     _thread.start_new_thread(setPlayer, ())
 

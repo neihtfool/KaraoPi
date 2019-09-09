@@ -14,8 +14,6 @@ URL = "https://www.youtube.com/watch?v="
 class VideoWindow(QMainWindow):
     def __init__(self, parent=None):
         super(VideoWindow, self).__init__(parent)
-        
-        self.paused = True
 
         self.instance = vlc.Instance()
         self.mediaPlayer = self.instance.media_list_player_new()
@@ -49,17 +47,7 @@ class VideoWindow(QMainWindow):
         self.positionSlider.setMaximum(1000)
         self.positionSlider.sliderMoved.connect(self.setPosition)
 
-        # self.qr_icon = QLabel(self)
-        # img = Image.open("./src/main/resources/qr.jpg")
-        # qimg = ImageQt(img.resize(10,10))
-        # pixmap = QPixmap.fromImage(qimg)
-        # # pixmap.scaled(5, 5)
-        # self.qr_icon.setPixmap(pixmap)
-        # # p = self.geometry().bottomRight() - self.qr_icon.geometry().bottomRight() - QPoint(100, 100)
-        # # self.qr_icon.move(p)
-
         self.hboxLayout = QHBoxLayout()
-        # self.hboxLayout.addWidget(self.qr_icon)
         self.hboxLayout.addWidget(self.positionSlider)
         self.hboxLayout.setSpacing(0)
         self.hboxLayout.setContentsMargins(0, 0, 0, 0)
@@ -82,6 +70,7 @@ class VideoWindow(QMainWindow):
 
     def openDialog(self, event):
         self.search_window.hide() if self.search_window.isVisible() else self.search_window.show()
+        self.search_window.start_listener()
 
     def updateUI(self):
         while True:
@@ -94,10 +83,8 @@ class VideoWindow(QMainWindow):
     def PlayPause(self, event):
         if self.mediaPlayer.is_playing():
             self.mediaPlayer.pause()
-            self.paused = True
         else:
-            if self.mediaPlayer.play():
-                self.paused = False
+            self.mediaPlayer.play()
 
     def Stop(self):
         self.mediaPlayer.stop()
@@ -118,7 +105,6 @@ class VideoWindow(QMainWindow):
         elif sys.platform == "darwin":
             self.mediaPlayer.set_nsobject(int(self.videoframe.winId()))
 
-        self.paused = False
         self.mediaPlayer.play()
         
     def setVolume(self, Volume):
