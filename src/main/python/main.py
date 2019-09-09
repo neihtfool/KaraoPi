@@ -155,7 +155,7 @@ if __name__ == '__main__':
     
     print("Initialize Videoframe")
     window = Window()
-    window.v_window.show()
+    window.v_window.showFullScreen()
     _thread.start_new_thread(setPlayer, ())
 
     exit_code = window.appctxt.app.exec_()
