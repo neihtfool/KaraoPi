@@ -89,7 +89,7 @@ class SearchWindow(QWidget):
 
         self.qr_icon = QLabel(self)
         img = ImageQt("./src/main/resources/qr.jpg")
-        pixmap = QPixmap.fromImage(img).scaledToWidth(256)
+        pixmap = QPixmap.fromImage(img).scaledToWidth(128)
         self.qr_icon.setPixmap(pixmap)
         self.qr_icon.setAlignment(Qt.AlignCenter)
 
