@@ -7,6 +7,7 @@ from functools import partial
 from PIL.ImageQt import ImageQt
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from keyword_collector import write_data
+from qr_code_gen import generate_qr_code
 import asyncio
 import websockets
 import youtube_api as youtube
@@ -21,11 +22,9 @@ s.connect(("8.8.8.8", 80))
 IP_ADDR = s.getsockname()[0]
 s.close()
 PORT = 8000
-URL = "http://" + IP_ADDR + ":" + str(PORT)
 
 
 class WebSocketListener(QThread):
-
     queue = pyqtSignal(object)
 
     def __init__(self, parent=None):
@@ -48,6 +47,8 @@ class WebSocketListener(QThread):
 class SearchWindow(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.URL = "http://" + IP_ADDR + ":" + str(PORT)
 
         self.tmp = {}
         self.textbox = QLineEdit(self)
@@ -88,11 +89,11 @@ class SearchWindow(QWidget):
 
         self.qr_icon = QLabel(self)
         img = ImageQt("./src/main/resources/qr.jpg")
-        pixmap = QPixmap.fromImage(img).scaledToWidth(96)
+        pixmap = QPixmap.fromImage(img).scaledToWidth(256)
         self.qr_icon.setPixmap(pixmap)
         self.qr_icon.setAlignment(Qt.AlignCenter)
 
-        self.url_label = QLabel(URL)
+        self.url_label = QLabel(self.URL)
 
         self.vbox = QVBoxLayout()
         self.vbox.addLayout(self.hbox)
@@ -166,7 +167,7 @@ class SearchWindow(QWidget):
     def send_request(self, body, endpoint):
         http_client = HTTPClient()
         try:
-            res = http_client.fetch(URL + endpoint, method='POST', headers=None, body=body)
+            res = http_client.fetch(self.URL + endpoint, method='POST', headers=None, body=body)
             content = json.loads(res.body.decode("utf-8"))
             self.setupQueue(content['queue'])
             self.currentVideo.setText(content['currentVideo'])
@@ -176,10 +177,14 @@ class SearchWindow(QWidget):
 
 if __name__ == '__main__':
     IP_ADDR = input("Enter address of server (192.xxx.xxx.xx): ")
+    URL = "http://" + IP_ADDR + ":" + str(PORT)
+    generate_qr_code(URL)
     appctxt = ApplicationContext()
     stylesheet = appctxt.get_resource('styles.qss')
     appctxt.app.setStyleSheet(open(stylesheet).read())
     window = SearchWindow()
+    window.URL = URL
+    window.url_label.setText(URL)
     window.start_listener()
     window.showFullScreen()
     exit_code = appctxt.app.exec_()
