@@ -14,9 +14,3 @@ def generate_qr_code(data):
     img = qr.make_image()
     img.save("./src/main/resources/qr.jpg")
     return img
-
-import socket
-
-
-IP_ADDR = "http://" + socket.gethostbyname(socket.gethostname()) + ":" + str(8000)
-generate_qr_code(IP_ADDR)

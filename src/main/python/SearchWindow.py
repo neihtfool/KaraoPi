@@ -13,10 +13,12 @@ import urllib
 import socket
 
 
-IP_ADDR = socket.gethostbyname(socket.gethostname())
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+IP_ADDR = s.getsockname()[0]
+s.close()
 PORT = 8000
 URL = "http://" + IP_ADDR + ":" + str(PORT)
-
 
 
 class WebSocketListener(QThread):
