@@ -5,12 +5,14 @@ from CustomListItem import CustomListItem
 from tornado.httpclient import HTTPClient, HTTPRequest
 from functools import partial
 from PIL.ImageQt import ImageQt
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import asyncio
 import websockets
 import youtube_api as youtube
 import json
 import urllib
 import socket
+import sys
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -169,3 +171,15 @@ class SearchWindow(QWidget):
             self.currentVideo.setText(content['currentVideo'])
         except Exception as e:
             print(str(e))
+
+
+if __name__ == '__main__':
+    IP_ADDR = input("Enter address of server (192.xxx.xxx.xx): ")
+    appctxt = ApplicationContext()
+    stylesheet = appctxt.get_resource('styles.qss')
+    appctxt.app.setStyleSheet(open(stylesheet).read())
+    window = SearchWindow()
+    window.start_listener()
+    window.showFullScreen()
+    exit_code = appctxt.app.exec_()
+    sys.exit(0)
