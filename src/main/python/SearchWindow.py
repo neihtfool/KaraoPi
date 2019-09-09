@@ -6,6 +6,7 @@ from tornado.httpclient import HTTPClient, HTTPRequest
 from functools import partial
 from PIL.ImageQt import ImageQt
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from keyword_collector import write_data
 import asyncio
 import websockets
 import youtube_api as youtube
@@ -118,7 +119,8 @@ class SearchWindow(QWidget):
 
     def search(self):
         textboxValue = self.textbox.text()
-        results = youtube.search(textboxValue)
+        results = youtube.search(textboxValue, 25)
+        write_data(textboxValue, "search_w_app.txt")
         self.build_list(results)
 
     def build_list(self, results):

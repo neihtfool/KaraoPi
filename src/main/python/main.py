@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from collections import deque
 from tornado.platform import asyncio
 from qr_code_gen import generate_qr_code
+from keyword_collector import write_data, write_dict
 import youtube_api as youtube
 import sys
 import os
@@ -74,6 +75,7 @@ class RemoveVideoHandler(tornado.web.RequestHandler):
     def post(self):
         global queue
         index = self.get_argument("index", NODATA)
+        write_data(queue[len(queue) - 1 - int(index)]['title'], "remove.txt")
         del queue[len(queue) - 1 - int(index)]
         self.write(createQueueResponse())
 
@@ -83,6 +85,7 @@ class AddVideoHandler(tornado.web.RequestHandler):
         global queue
         title = self.get_argument("title", NODATA)
         video_id = self.get_argument('video_id', NODATA)
+        write_data(title, "add.txt")
         queue.appendleft({'title': title, 'video_id': video_id})
         self.write(createQueueResponse())
 
@@ -93,12 +96,14 @@ class xAddVideoHandler(tornado.web.RequestHandler):
         data = json.loads(self.request.body.decode('utf-8'))
         title = data['title']
         video_id = data['video_id']
+        write_data(title, "add_via_html.txt")
         queue.appendleft({'title': title, 'video_id': video_id})
         self.write(title + " added.")
 
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
+        write_data("X", "visit.txt")
         self.render('../web/index.html', url=IP_ADDR)
 
 
@@ -106,6 +111,7 @@ class YTHandler(tornado.web.RequestHandler):
     def post(self):
         data = json.loads(self.request.body.decode('utf-8'))
         q = data['query']
+        write_dict(json.dumps(data))
         max_results = data['maxResults']
         results = youtube.search(q, max_results)
         res = {}
