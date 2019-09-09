@@ -75,8 +75,8 @@
             </div>
             <div class="w3-display-bottomleft w3-container">
               <p class="w3-xlarge">Currently Playing:</p>
-              <p id="activeVideo" class="w3-large">Lady Gaga, Bradley Cooper - Shallow (A Star Is Born) (Karaoke Version)</p>
-              <p>Next:<span id="nextVideo"></span></p>
+              <p id="activeVideo" class="w3-large"></p>
+              <p>Next: <span id="nextVideo"></span></p>
             </div>
           </div>
           
@@ -123,6 +123,8 @@
               xhr.setRequestHeader("Content-Type", "application/json");
               xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
+                  var div = document.getElementById("results")
+                  div.innerHTML = ""
                   var json = JSON.parse(xhr.responseText);
                   Object.keys(json).forEach(function(k){
                     var btn = document.createElement("button")
@@ -136,7 +138,6 @@
                     var p = document.createElement("p")
                     p.className = "ow"
                     p.appendChild(btn)
-                    var div = document.getElementById("results")
                     div.appendChild(p)
                     
                   });
@@ -156,7 +157,6 @@
               xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                   var msg = xhr.responseText;
-                  console.log(msg)  
                 }
               }
               
