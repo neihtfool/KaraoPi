@@ -104,7 +104,7 @@
                   <input id="maxResults" class="w3-input w3-border" type="number" placeholder="max. Search results. Default: 5">
 
                   <p><input id="searchBox" class="w3-input w3-padding-16 w3-border" type="text" placeholder="Search" required query="Query"></p>
-                  <p><button onclick="search();" id="search-button" class="w3-button" type="submit">SEARCH</button></p>
+                  <p><button onclick="search();" id="search-button" class="w3-button w3-black" type="submit">SEARCH</button></p>
 
                 <div id="results">
                 </div>
@@ -118,7 +118,12 @@
               const xhr = new XMLHttpRequest();
               const url = 'http://' + ip_addr + ':8000/search';
               var query = document.getElementById("searchBox").value;
-              var data = JSON.stringify({"query": query});
+              var maxResults = document.getElementById('maxResults').value
+              if (maxResults === "") {
+                maxResults = 5
+              }
+
+              var data = JSON.stringify({"query": query, "maxResults": maxResults});
               xhr.open("POST", url, true);
               xhr.setRequestHeader("Content-Type", "application/json");
               xhr.onreadystatechange = function() {

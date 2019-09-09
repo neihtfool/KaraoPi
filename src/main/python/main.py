@@ -106,7 +106,8 @@ class YTHandler(tornado.web.RequestHandler):
     def post(self):
         data = json.loads(self.request.body.decode('utf-8'))
         q = data['query']
-        results = youtube.search(q)
+        max_results = data['maxResults']
+        results = youtube.search(q, max_results)
         res = {}
         for r in results:
             res[youtube.get_id(r)] = youtube.get_title(r)
