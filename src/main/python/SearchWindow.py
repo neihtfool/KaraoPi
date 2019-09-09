@@ -159,7 +159,6 @@ class SearchWindow(QWidget):
 
     def remove(self, index):
         body = urllib.parse.urlencode({'index': index })
-        print(body)
         self.send_request(body, '/remove')
 
     def send_request(self, body, endpoint):
