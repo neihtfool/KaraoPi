@@ -24,6 +24,8 @@ asyncio = "*"
 tornado = "*"
 pillow = "*"
 qrcode = "*"
+oauth2client = "*"
+youtube-search = "*"
 
 [requires]
 python_version = "3.7"

@@ -35,11 +35,14 @@ currentVideo = ""
 NODATA = "No data received!"
 
 class Window():
-    generate_qr_code(URL)
-    appctxt = ApplicationContext()
-    stylesheet = appctxt.get_resource('styles.qss')
-    appctxt.app.setStyleSheet(open(stylesheet).read())
-    v_window = VideoWindow()
+    def __init__(self, url):
+        super().__init__()
+        generate_qr_code(url)
+        self.appctxt = ApplicationContext()
+        stylesheet = self.appctxt.get_resource('styles.qss')
+        self.appctxt.app.setStyleSheet(open(stylesheet).read())
+        self.v_window = VideoWindow()
+        self.s_window = SearchWindow()
 
 
 class QueueWebSocketHandler(tornado.websocket.WebSocketHandler):
@@ -121,21 +124,23 @@ def createQueueResponse():
     return {"currentVideo": currentVideo, "queue": response_queue}
 
 
-def setPlayer():
+def setPlayer(v_window):
     global currentVideo
     global queue
     while True:
-        if not window.v_window.mediaPlayer.is_playing():
+        if not v_window.mediaPlayer.is_playing():
             if queue:
                 temp_dict = queue.pop()
                 currentVideo = temp_dict['title']
-                Window.v_window.PlayVideo(videoId=temp_dict['video_id'])
+                v_window.PlayVideo(videoId=temp_dict['video_id'])
                 time.sleep(0.3)
 
 def make_app():
     return tornado.web.Application([
         (r"/", IndexHandler),
         (r"/images/(.*)",tornado.web.StaticFileHandler, {"path": "./src/main/web/images/"},),
+        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': ""}),
+        (r'/(favicon\.ico)', tornado.web.StaticFileHandler, {"path": "./src/main/icons/"}),
         (r"/add", AddVideoHandler),
         (r"/xAdd", xAddVideoHandler),
         (r"/remove", RemoveVideoHandler),
@@ -154,9 +159,13 @@ if __name__ == '__main__':
     _thread.start_new_thread(main_loop.start, ())
     
     print("Initialize Videoframe")
-    window = Window()
+    window = Window(URL)
     window.v_window.showFullScreen()
-    _thread.start_new_thread(setPlayer, ())
+    _thread.start_new_thread(setPlayer, (window.v_window, ))
+
+    print("Initialize SearchWindow")
+    window.s_window.start_listener()
+    window.s_window.showFullScreen()
 
     exit_code = window.appctxt.app.exec_()
     sys.exit(0)

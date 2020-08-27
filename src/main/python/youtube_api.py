@@ -1,5 +1,6 @@
 from selenium import webdriver
 from googleapiclient.discovery import build
+from youtube_search import YoutubeSearch
 import os
 import sys
 import requests
@@ -8,23 +9,20 @@ import urllib
 
 TOKEN = os.environ['YT_TOKEN']
 
-def search(query, max=5):
-    youtube = build('youtube', 'v3', developerKey=TOKEN)
-    req = youtube.search().list(q=query, part='snippet', maxResults=max, type='video') 
-    res = req.execute() # search results
-    search_results = res['items']
-    return search_results
+def search(term, max=10):
+    results = YoutubeSearch(search_terms=term, max_results=int(max)).to_dict()
+    return results
 
 
 def get_title(item):
-    return html.unescape(item['snippet']['title'])
+    return item['title']
 
 
 def get_id(item):
-    return item['id']['videoId']
+    return item['id']
 
 
-def get_thumbnail_medium(item):
-    url = item['snippet']['thumbnails']['default']['url']
+def get_thumbnail(item):
+    url = item['thumbnails'][0]
     data = urllib.request.urlopen(url).read()
     return data

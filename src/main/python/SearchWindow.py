@@ -6,9 +6,9 @@ from tornado.httpclient import HTTPClient, HTTPRequest
 from functools import partial
 from PIL.ImageQt import ImageQt
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
+import youtube_api as youtube
 import asyncio
 import websockets
-import youtube_api as youtube
 import json
 import urllib
 import socket
@@ -22,9 +22,7 @@ s.close()
 PORT = 8000
 URL = "http://" + IP_ADDR + ":" + str(PORT)
 
-
 class WebSocketListener(QThread):
-
     queue = pyqtSignal(object)
 
     def __init__(self, parent=None):
@@ -125,7 +123,7 @@ class SearchWindow(QWidget):
         self.model.clear()
         for item in results:
             title = youtube.get_title(item)
-            thumbnail = youtube.get_thumbnail_medium(item)
+            thumbnail = youtube.get_thumbnail(item)
             pixmap = QPixmap()
             pixmap.loadFromData(thumbnail)
             image = QIcon(pixmap)
