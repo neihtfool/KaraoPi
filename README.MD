@@ -1,13 +1,3 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
-
-<!-- PROJECT LOGO -->
 <br />
 <p align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
@@ -115,6 +105,7 @@ TODO
 ## Roadmap
 * Bugfix: Queue has more than one video - when pausing the video for a second the next video from the queue will be played after resuming [TODO]
 * Add demo and usage example to `README`
+
 See the [open issues](https://github.com/Neihtq/KaraoPi/issues) for a list of proposed features (and known issues).
 
 
@@ -142,3 +133,8 @@ E-mail: q.thien.nguyen@outlook.de
 
 [LinkedIn](https://www.linkedin.com/feed/)
 
+## Acknowledgements
+* [Best-README-Template](https://github.com/othneildrew/Best-README-Template#license)
+
+[product-screenshot]: images/screenshot_app.png
+[interface-screenshot]: images/screenshot_website.png
