@@ -55,6 +55,8 @@ Everything to know about this project:
 
 When having a (karaoke) party/gathering with music running in the background, everyone can add play their videos of choice (but FCFS)-
 
+**tl;dr: remote YouTube player with queue functionality and access via web browser**
+
 ### Built With 
 Server and Search Window
 * [PyQt5](https://www.riverbankcomputing.com/software/pyqt/)
