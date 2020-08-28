@@ -14,19 +14,18 @@
     <img src="src/main/icons/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">KaraoPi</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Everyone's music/video at a party
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <a href="https://github.com/Neihtq/KaraoPi/issues">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/Neihtq/KaraoPi/issues">Request Feature</a>
   </p>
 </p>
 
@@ -45,7 +44,6 @@
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
-* [Acknowledgements](#acknowledgements)
 
 
 
@@ -54,56 +52,57 @@
 ![Product Name Screen Shot][product-screenshot]
 ![Product Name Screen Shot][interface-screenshot]
 
-TODO: write descriptione
+My friends and I often enjoy singing Karaoke at a private place by plugging in some Mics and singing karaoke versions of our favorite songs from YouTube (I call it low budget) - hence the weird project name! 
 
-TODO List of aspects:
-* aspect 1
-* aspect 2
-* aspect 3
+But project is not all about Karaoke. You can plug some speakers into a computer (e.g. a Raspberry**Pi**) and optionally also a TV as well. The second image shows the web interface where everyone can simply add a video or song or their choice to the queue (via phone and desktop possible).
 
-section 2
+This application is set in a simple client-server-architecture. Note that the host machine (server) and everyone adding videos to the queue (clients) have to be in the same network!
 
-conclusion
+Everything to know about this project:
+* Server: Plays videos from YouTube and provides a queue
+* Search Window: (running on host machine): Search for YouTube videos and add them queue; delete queue elements; provides QR code and URL for web interface
+* Client (Web interface): Shows queue and currently playing video; search for YouTube videos and them to queue
 
-### Built With
-TODO: list stack
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-* [Laravel](https://laravel.com)
+When having a (karaoke) party/gathering with music running in the background, everyone can add play their videos of choice (but FCFS)-
 
+### Built With 
+Server and Search Window
+* [PyQt5](https://www.riverbankcomputing.com/software/pyqt/)
+* [Tornado](https://github.com/tornadoweb/tornado)
+* [pafy](https://pypi.org/project/pafy/)
+* [fman build system](https://build-system.fman.io/)
+* [youtube_search](https://github.com/joetats/youtube_search)
+* [Python QR Code](https://github.com/lincolnloop/python-qrcode)
+
+Web interface:
+* [Bootstrap](https://getbootstrap.com/)
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-TODO
+You only need one machine to run this application. To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
+You'll need
+* [Python (at the time of this writing version 3.7)](https://www.python.org/)
+* [pipenv](https://github.com/pypa/pipenv)
 
-TODO
-* fbs
+### Installation
+With all prerequisites met, these steps should apply for any OS
+1. Clone the repo
+```sh
+git clone https://github.com/Neihtq/KaraoPi
+```
+3. Navigate to the project folder and install pip packages
+```sh
+cd KaraoPi/
+pipenv install
+```
+4. Start the application with
 ```sh
 fbs run
 ```
-
-### Installation
-TODO
-
-1. 
-2. Clone the repo
-```sh
-git clone this
-```
-3. Install pip packages
-```sh
-pipenv install
-```
-4. 
-```JS
-STH
-```
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -114,9 +113,9 @@ TODO
 
 <!-- ROADMAP -->
 ## Roadmap
-TODO
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+* Bugfix: Queue has more than one video - when pausing the video for a second the next video from the queue will be played after resuming [TODO]
+* Add demo and usage example to `README`
+See the [open issues](https://github.com/Neihtq/KaraoPi/issues) for a list of proposed features (and known issues).
 
 
 
@@ -132,51 +131,14 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 
-
-<!-- LICENSE -->
 ## License
-None
-
-
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <!-- CONTACT -->
 ## Contact
+Github: [neihtq](https://github.com/Neihtq)
 
-TODO
+E-mail: q.thien.nguyen@outlook.de
 
+[LinkedIn](https://www.linkedin.com/feed/)
 
-
-<!-- ACKNOWLEDGEMENTS 
-## Acknowledgements
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Img Shields](https://shields.io)
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
-[interface-screenshot]
-
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=flat-square
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=flat-square
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=flat-square
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot_app.png
-[interface-screenshot]: images/screenshot_website.png
