@@ -133,7 +133,7 @@ Github: [neihtq](https://github.com/Neihtq)
 
 E-mail: q.thien.nguyen@outlook.de
 
-[LinkedIn](https://www.linkedin.com/feed/)
+[LinkedIn](https://www.linkedin.com/in/thien-quang-nguyen-808101143/)
 
 ## Acknowledgements
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template#license)
